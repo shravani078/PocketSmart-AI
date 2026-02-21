@@ -45,12 +45,12 @@ pocketsmart/
 🚀 Quick Start
 
 # 1. Clone the repo
-git clone https://github.com/your-username/pocketsmart-ai.git
+git clone https://github.com/shravani078/pocketsmart-ai.git
 cd pocketsmart-ai
 # 2. Create virtual environment
 python -m venv venv
 venv\Scripts\activate        # Windows
-source venv/bin/activate     # Mac/Linux
+source venv/bin/activate     # Mac/Linu
 # 3. Install dependencies
 pip install -r requirements.txt
 # 4. Add your Gemini API key to .env
@@ -58,4 +58,5 @@ GEMINI_API_KEY=AIzaSyBmL1TM3O3Lcvf44NyJ1Y6JWcbhA8SlPyc
 # 5. Run
 python app.py
 Open → http://localhost:5000
-Demo login → username: demo | password: demo123
+Demo login 
+username: demo | password: demo123
