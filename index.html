@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PocketSmart AI — Smart Budget Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/styles.css"/>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN PAGE ═══════════ -->
+<div id="loginPage" class="login-page">
+
+  <!-- Animated background -->
+  <div class="login-bg">
+    <div class="bg-orb orb1"></div>
+    <div class="bg-orb orb2"></div>
+    <div class="bg-orb orb3"></div>
+    <div class="bg-grid"></div>
+    <!-- Floating money particles -->
+    <div class="particle" style="--x:10%;--y:20%;--d:3s;--s:.9">💰</div>
+    <div class="particle" style="--x:85%;--y:15%;--d:4.2s;--s:1.1">📊</div>
+    <div class="particle" style="--x:70%;--y:70%;--d:2.8s;--s:.8">💎</div>
+    <div class="particle" style="--x:20%;--y:80%;--d:5s;--s:1">📈</div>
+    <div class="particle" style="--x:50%;--y:10%;--d:3.5s;--s:.7">🤖</div>
+    <div class="particle" style="--x:90%;--y:55%;--d:4s;--s:.85">✨</div>
+    <div class="particle" style="--x:5%;--y:50%;--d:3.2s;--s:1.05">💸</div>
+  </div>
+
+  <div class="login-center">
+
+    <!-- Brand Header -->
+    <div class="login-brand">
+      <div class="login-brand-icon">💸</div>
+      <div class="login-brand-text">
+        <span class="lbt-pocket">Pocket</span><span class="lbt-smart">Smart</span>
+        <span class="lbt-ai">AI</span>
+      </div>
+    </div>
+    <p class="login-tagline">Your <em>Intelligent</em> Budget & Finance Companion</p>
+
+    <!-- Auth Card -->
+    <div class="auth-card">
+      <!-- Tab Switcher -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">
+          <span class="tab-icon">🔐</span> Sign In
+        </button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">
+          <span class="tab-icon">✨</span> Create Account
+        </button>
+        <div class="tab-indicator" id="tabIndicator"></div>
+      </div>
+
+      <!-- LOGIN SECTION -->
+      <div class="auth-section active" id="sec-login">
+        <div class="auth-welcome">
+          <h2>Welcome back <span class="wave">👋</span></h2>
+          <p>Sign in to access your financial dashboard</p>
+        </div>
+        <div class="auth-error hide" id="loginErr"></div>
+        <div class="form-field">
+          <label>Username</label>
+          <div class="input-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" id="loginUser" placeholder="Enter your username" value="demo" autocomplete="username"/>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔑</span>
+            <input type="password" id="loginPass" placeholder="Enter your password" value="demo123" autocomplete="current-password"/>
+            <button class="eye-btn" onclick="togglePw('loginPass',this)" type="button">👁</button>
+          </div>
+        </div>
+        <button class="auth-submit" onclick="doLogin()" id="loginBtn">
+          <span>Sign In</span>
+          <span class="btn-arrow">→</span>
+          <div class="btn-ripple"></div>
+        </button>
+        <p class="auth-switch">No account? <a onclick="switchTab('register')">Create one free →</a></p>
+        <div class="demo-hint">💡 Demo credentials pre-filled — just click Sign In</div>
+      </div>
+
+      <!-- REGISTER SECTION -->
+      <div class="auth-section" id="sec-register">
+        <div class="auth-welcome">
+          <h2>Get started free 🚀</h2>
+          <p>Create your PocketSmart account today</p>
+        </div>
+        <div class="auth-error hide" id="regErr"></div>
+        <div class="auth-success hide" id="regOk"></div>
+        <div class="field-row">
+          <div class="form-field">
+            <label>Full Name</label>
+            <div class="input-wrap">
+              <span class="input-icon">✍️</span>
+              <input type="text" id="regName" placeholder="John Doe"/>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Username</label>
+            <div class="input-wrap">
+              <span class="input-icon">👤</span>
+              <input type="text" id="regUser" placeholder="johndoe"/>
+            </div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Email (optional)</label>
+          <div class="input-wrap">
+            <span class="input-icon">📧</span>
+            <input type="email" id="regEmail" placeholder="john@example.com"/>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="form-field">
+            <label>Monthly Income</label>
+            <div class="input-wrap">
+              <span class="input-icon">💰</span>
+              <input type="number" id="regIncome" placeholder="3000"/>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Currency</label>
+            <div class="input-wrap sel-wrap">
+              <span class="input-icon">🌍</span>
+              <select id="regCurrency">
+                <option value="$">USD ($)</option>
+                <option value="₹">INR (₹)</option>
+                <option value="€">EUR (€)</option>
+                <option value="£">GBP (£)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔑</span>
+            <input type="password" id="regPass" placeholder="Min 6 characters"/>
+            <button class="eye-btn" onclick="togglePw('regPass',this)" type="button">👁</button>
+          </div>
+        </div>
+        <button class="auth-submit" onclick="doRegister()" id="regBtn">
+          <span>Create Account</span>
+          <span class="btn-arrow">→</span>
+          <div class="btn-ripple"></div>
+        </button>
+        <p class="auth-switch">Already have an account? <a onclick="switchTab('login')">Sign In →</a></p>
+      </div>
+    </div>
+
+    <!-- Feature Pills -->
+    <div class="feature-pills">
+      <div class="fpill">📊 Expense Tracking</div>
+      <div class="fpill">🤖 Gemini AI</div>
+      <div class="fpill">🎯 Smart Budgets</div>
+      <div class="fpill">📈 Forecasts</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ APP SHELL ═══════════ -->
+<div id="appPage" class="app-shell hide">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">💸</div>
+      <div class="sb-logo-text">Pocket<span>Smart</span></div>
+    </div>
+    <div class="sb-section-label">Navigation</div>
+    <button class="sb-link active" id="sbl-dashboard" onclick="goPage('dashboard')">
+      <span class="sb-icon">📊</span> Dashboard
+    </button>
+    <button class="sb-link" id="sbl-analyze" onclick="goPage('analyze')">
+      <span class="sb-icon">🤖</span> AI Analyze
+    </button>
+    <button class="sb-link" id="sbl-expenses" onclick="goPage('expenses')">
+      <span class="sb-icon">➕</span> Add Expense
+    </button>
+    <button class="sb-link" id="sbl-budget" onclick="goPage('budget')">
+      <span class="sb-icon">🎯</span> Budget
+    </button>
+    <div class="sb-bottom">
+      <div class="sb-user-card">
+        <div class="sb-avatar" id="sbAvatar">A</div>
+        <div class="sb-user-info">
+          <div class="sb-username" id="sbUsername">Alex</div>
+          <div class="sb-usersub" id="sbUserSub">demo user</div>
+        </div>
+      </div>
+      <button class="sb-logout" onclick="doLogout()">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-area">
+
+    <!-- DASHBOARD PAGE -->
+    <div class="app-page active" id="pg-dashboard">
+      <div class="page-header">
+        <h1 class="page-title" id="dashTitle">Dashboard 📊</h1>
+        <p class="page-sub" id="dashSub">Your financial overview</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card s-blue">
+          <div class="sc-icon">💰</div>
+          <div class="sc-label">Monthly Income</div>
+          <div class="sc-val" id="stIncome">$0</div>
+          <div class="sc-meta">Your budget</div>
+        </div>
+        <div class="stat-card s-red">
+          <div class="sc-icon">💳</div>
+          <div class="sc-label">Total Spent</div>
+          <div class="sc-val" id="stSpent">$0</div>
+          <div class="sc-meta" id="stPct">0% used</div>
+        </div>
+        <div class="stat-card s-teal">
+          <div class="sc-icon">💵</div>
+          <div class="sc-label">Remaining</div>
+          <div class="sc-val" id="stRem">$0</div>
+          <div class="sc-meta">Available</div>
+        </div>
+        <div class="stat-card s-purple">
+          <div class="sc-icon">🧾</div>
+          <div class="sc-label">Expenses</div>
+          <div class="sc-val" id="stCount">0</div>
+          <div class="sc-meta">Logged</div>
+        </div>
+      </div>
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-title">📊 Spending by Category</div>
+          <div id="catBars"></div>
+          <div class="empty-state" id="catBarsEmpty">No expenses yet. Add some to see breakdown!</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📋 Recent Expenses</div>
+          <div id="recentList"></div>
+          <div class="empty-state" id="recentEmpty">No expenses logged yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI ANALYZE PAGE -->
+    <div class="app-page" id="pg-analyze">
+      <div class="page-header">
+        <h1 class="page-title">AI Budget Analysis 🤖</h1>
+        <p class="page-sub">Let Gemini analyze your finances and give smart suggestions</p>
+      </div>
+      <div class="analyze-grid">
+        <div class="card">
+          <div class="card-title">💬 Ask Gemini AI</div>
+          <div class="form-field" style="margin-bottom:14px">
+            <label>Monthly Income</label>
+            <div class="input-wrap">
+              <span class="input-icon">💰</span>
+              <input type="number" id="aiIncome" placeholder="e.g. 3000"/>
+            </div>
+          </div>
+          <div id="aiExpensesList">
+            <div class="ae-row">
+              <select class="ae-cat">
+                <option>Food</option><option>Transport</option><option>Entertainment</option>
+                <option>Shopping</option><option>Health</option><option>Bills</option>
+                <option>Education</option><option>Other</option>
+              </select>
+              <input type="number" class="ae-amt" placeholder="Amount"/>
+              <input type="text" class="ae-desc" placeholder="Description"/>
+              <button class="ae-remove" onclick="removeAERow(this)">✕</button>
+            </div>
+          </div>
+          <button class="add-row-btn" onclick="addAERow()">＋ Add Another Expense</button>
+          <div class="form-field" style="margin-top:14px">
+            <label>Savings Goal (optional)</label>
+            <div class="input-wrap">
+              <span class="input-icon">🎯</span>
+              <input type="number" id="aiSavingsGoal" placeholder="e.g. 500"/>
+            </div>
+          </div>
+          <button class="analyze-btn" onclick="runAnalysis()" id="analyzeBtn">
+            <span id="analyzeBtnText">🤖 Analyze My Budget</span>
+            <div class="analyze-spinner hide" id="analyzeSpinner"></div>
+          </button>
+          <div class="analyze-error hide" id="analyzeError"></div>
+        </div>
+
+        <div class="card analysis-result-card" id="analysisCard" style="display:none">
+          <div class="card-title">✨ AI Insights</div>
+          <div class="analysis-summary" id="analysisSummary"></div>
+          <div class="analysis-text" id="analysisText"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD EXPENSE PAGE -->
+    <div class="app-page" id="pg-expenses">
+      <div class="page-header">
+        <h1 class="page-title">Add Expense ➕</h1>
+        <p class="page-sub">Log your spending to stay on budget</p>
+      </div>
+      <div class="exp-grid">
+        <div class="card">
+          <div class="amt-preview" id="expAmtPreview">$0.00</div>
+          <div class="form-field">
+            <label>Category</label>
+            <div class="cat-pills">
+              <button class="cat-pill active" onclick="selectCat(this,'Food')">🍔 Food</button>
+              <button class="cat-pill" onclick="selectCat(this,'Transport')">🚗 Transport</button>
+              <button class="cat-pill" onclick="selectCat(this,'Entertainment')">🎬 Entertainment</button>
+              <button class="cat-pill" onclick="selectCat(this,'Shopping')">🛍️ Shopping</button>
+              <button class="cat-pill" onclick="selectCat(this,'Health')">💊 Health</button>
+              <button class="cat-pill" onclick="selectCat(this,'Bills')">📄 Bills</button>
+              <button class="cat-pill" onclick="selectCat(this,'Education')">📚 Education</button>
+              <button class="cat-pill" onclick="selectCat(this,'Other')">📦 Other</button>
+            </div>
+            <input type="hidden" id="expCat" value="Food"/>
+          </div>
+          <div class="form-field">
+            <label>Amount</label>
+            <div class="input-wrap">
+              <span class="input-icon" id="expCurrIcon">$</span>
+              <input type="number" id="expAmt" placeholder="0.00" step="0.01"
+                oninput="document.getElementById('expAmtPreview').textContent=DB.currency+(parseFloat(this.value)||0).toFixed(2)"/>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Description</label>
+            <div class="input-wrap">
+              <span class="input-icon">✍️</span>
+              <input type="text" id="expDesc" placeholder="e.g. Lunch at cafe"/>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Date</label>
+            <div class="input-wrap">
+              <span class="input-icon">📅</span>
+              <input type="date" id="expDate"/>
+            </div>
+          </div>
+          <button class="auth-submit" onclick="addExpense()">Add Expense →</button>
+        </div>
+        <div class="card">
+          <div class="card-title">🧾 All Expenses</div>
+          <div id="allExpensesList"></div>
+          <div class="empty-state" id="allExpEmpty">No expenses yet. Add your first one!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUDGET PAGE -->
+    <div class="app-page" id="pg-budget">
+      <div class="page-header">
+        <h1 class="page-title">Budget & Settings 🎯</h1>
+        <p class="page-sub">Set monthly limits and manage your profile</p>
+      </div>
+      <div class="budget-grid">
+        <div class="card">
+          <div class="card-title">💰 Monthly Income</div>
+          <div class="input-wrap" style="margin-bottom:12px">
+            <span class="input-icon">💵</span>
+            <input type="number" id="budgetIncome" placeholder="Monthly income"/>
+          </div>
+          <button class="small-btn" onclick="saveIncome()">Save Income</button>
+          <div class="card-title" style="margin-top:22px">📋 Category Limits</div>
+          <div id="budgetLimitRows"></div>
+          <button class="small-btn" onclick="saveBudgets()" style="margin-top:8px">Save Limits</button>
+        </div>
+        <div class="card">
+          <div class="card-title">🎯 Savings Goal</div>
+          <div class="form-field">
+            <label>Goal Amount</label>
+            <div class="input-wrap">
+              <span class="input-icon">🏆</span>
+              <input type="number" id="savGoal" placeholder="e.g. 1000"/>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Amount Saved</label>
+            <div class="input-wrap">
+              <span class="input-icon">💚</span>
+              <input type="number" id="savSaved" placeholder="e.g. 250"/>
+            </div>
+          </div>
+          <button class="small-btn" onclick="saveSavings()">Update Savings</button>
+          <div class="savings-display" id="savingsDisplay" style="margin-top:18px;display:none">
+            <div class="savings-val" id="savingsVal">$0</div>
+            <div class="savings-sub" id="savingsSub">0% of goal</div>
+            <div class="pb-track" style="height:10px;margin-top:10px">
+              <div class="pb-fill" id="savingsBar" style="width:0%;background:linear-gradient(90deg,#12C784,#34D399)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Floating Chatbot -->
+<button class="cb-trigger" id="cbTrigger" onclick="toggleChatbot()">
+  🤖 <span class="cb-badge">AI</span>
+</button>
+<div class="cb-panel" id="cbPanel">
+  <div class="cb-header">
+    <div class="cb-hdr-av">🤖</div>
+    <div>
+      <div class="cb-hdr-name">PocketSmart AI</div>
+      <div class="cb-hdr-sub">● Gemini powered</div>
+    </div>
+    <button class="cb-close" onclick="toggleChatbot()">✕</button>
+  </div>
+  <div class="cb-msgs" id="cbMsgs">
+    <div class="cb-welcome">
+      <div class="cbw-icon">🤖</div>
+      <strong>Hi! I'm your AI assistant</strong>
+      <p>Ask me about your finances!</p>
+    </div>
+  </div>
+  <div class="cb-chips">
+    <div class="cb-chip" onclick="cbSend('How is my spending this month?')">My spending</div>
+    <div class="cb-chip" onclick="cbSend('Give me 3 saving tips')">Save tips</div>
+    <div class="cb-chip" onclick="cbSend('Am I on track with savings?')">Savings</div>
+  </div>
+  <div class="cb-input-row">
+    <textarea id="cbInput" placeholder="Ask anything..." rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();cbSend(this.value);}"></textarea>
+    <button id="cbSendBtn" onclick="cbSend(document.getElementById('cbInput').value)">➤</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   DATA STORE
+═══════════════════════════════════════════════ */
+const DB = {
+  user: null,
+  expenses: [],
+  budget: {},
+  savings: { goal: 0, saved: 0 },
+  income: 0,
+  currency: '$'
+};
+
+const CAT_ICONS  = {Food:"🍔",Transport:"🚗",Entertainment:"🎬",Shopping:"🛍️",Health:"💊",Bills:"📄",Education:"📚",Other:"📦"};
+const CAT_COLORS = {Food:"#3B6EF8",Transport:"#0FCFB8",Entertainment:"#8B5CF6",Shopping:"#F5A623",Health:"#12C784",Bills:"#F03E3E",Education:"#3B82F6",Other:"#94A3B8"};
+const CATS = Object.keys(CAT_ICONS);
+
+/* ═══════════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════════ */
+function fmt(n) {
+  return `${DB.currency}${parseFloat(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+}
+function uid() { return Date.now()+Math.random().toString(36).slice(2,6); }
+function totalSpent() { return DB.expenses.reduce((s,e)=>s+e.amt,0); }
+function byCategory() {
+  const r={};
+  DB.expenses.forEach(e=>{r[e.cat]=(r[e.cat]||0)+e.amt;});
+  return r;
+}
+function showToast(msg, type='ok') {
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show '+(type==='err'?'toast-err':type==='warn'?'toast-warn':'toast-ok');
+  setTimeout(()=>t.className='toast',3000);
+}
+
+/* ═══════════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════════ */
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.auth-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('sec-'+tab).classList.add('active');
+  const ind=document.getElementById('tabIndicator');
+  ind.style.left = tab==='login'?'3px':'50%';
+}
+
+function togglePw(id, btn) {
+  const inp=document.getElementById(id);
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁';}
+}
+
+function doLogin() {
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value.trim();
+  const err=document.getElementById('loginErr');
+  err.classList.add('hide');
+  if(!u||!p){err.textContent='Please fill in both fields.';err.classList.remove('hide');return;}
+  if(u.length<2||p.length<3){err.textContent='Invalid credentials.';err.classList.remove('hide');return;}
+  DB.user={name:u==='demo'?'Alex Johnson':u, username:u, currency:'$', income:3000};
+  if(u==='demo'){DB.income=3000;DB.currency='$';DB.expenses=[
+    {id:'e1',cat:'Food',desc:'Lunch & groceries',amt:320,date:new Date().toISOString().split('T')[0]},
+    {id:'e2',cat:'Transport',desc:'Rideshare & gas',amt:180,date:new Date().toISOString().split('T')[0]},
+    {id:'e3',cat:'Entertainment',desc:'Netflix, games',amt:75,date:new Date().toISOString().split('T')[0]},
+    {id:'e4',cat:'Bills',desc:'Electricity & internet',amt:210,date:new Date().toISOString().split('T')[0]},
+    {id:'e5',cat:'Health',desc:'Gym membership',amt:55,date:new Date().toISOString().split('T')[0]},
+  ];}
+  enterApp();
+}
+
+function doRegister() {
+  const n=document.getElementById('regName').value.trim();
+  const u=document.getElementById('regUser').value.trim();
+  const p=document.getElementById('regPass').value.trim();
+  const inc=parseFloat(document.getElementById('regIncome').value)||0;
+  const cur=document.getElementById('regCurrency').value;
+  const err=document.getElementById('regErr');
+  const ok=document.getElementById('regOk');
+  [err,ok].forEach(e=>e.classList.add('hide'));
+  if(!n||!u||!p){err.textContent='Name, username & password required.';err.classList.remove('hide');return;}
+  if(p.length<6){err.textContent='Password must be at least 6 characters.';err.classList.remove('hide');return;}
+  DB.user={name:n,username:u,currency:cur,income:inc};
+  DB.income=inc;DB.currency=cur;
+  ok.textContent='✅ Account created! Signing you in...';ok.classList.remove('hide');
+  setTimeout(enterApp,1200);
+}
+
+function enterApp() {
+  document.getElementById('loginPage').classList.add('hide');
+  document.getElementById('appPage').classList.remove('hide');
+  document.getElementById('sbAvatar').textContent=(DB.user.name||'U')[0].toUpperCase();
+  document.getElementById('sbUsername').textContent=DB.user.name;
+  document.getElementById('sbUserSub').textContent=DB.user.username+' • '+DB.currency;
+  document.getElementById('expCurrIcon').textContent=DB.currency;
+  document.getElementById('budgetIncome').value=DB.income||'';
+  document.getElementById('aiIncome').value=DB.income||'';
+  document.getElementById('expDate').value=new Date().toISOString().split('T')[0];
+  initBudgetRows();
+  refreshDashboard();
+  document.getElementById('dashTitle').textContent='Dashboard 📊';
+  document.getElementById('dashSub').textContent='Welcome back, '+DB.user.name.split(' ')[0]+'!';
+}
+
+function doLogout() {
+  Object.assign(DB,{user:null,expenses:[],budget:{},savings:{goal:0,saved:0},income:0,currency:'$'});
+  document.getElementById('appPage').classList.add('hide');
+  document.getElementById('loginPage').classList.remove('hide');
+  switchTab('login');
+  showToast('Logged out successfully','ok');
+}
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+function goPage(page) {
+  document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+  document.getElementById('pg-'+page).classList.add('active');
+  document.getElementById('sbl-'+page).classList.add('active');
+  if(page==='dashboard') refreshDashboard();
+  if(page==='expenses') refreshExpenses();
+  if(page==='budget') refreshBudgetPage();
+}
+
+/* ═══════════════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════════════ */
+function refreshDashboard() {
+  const spent=totalSpent();
+  const rem=DB.income-spent;
+  const pct=DB.income?Math.round(spent/DB.income*100):0;
+  document.getElementById('stIncome').textContent=fmt(DB.income);
+  document.getElementById('stSpent').textContent=fmt(spent);
+  document.getElementById('stRem').textContent=fmt(rem);
+  document.getElementById('stPct').textContent=pct+'% used';
+  document.getElementById('stCount').textContent=DB.expenses.length;
+
+  // Category bars
+  const bc=byCategory();
+  const catBars=document.getElementById('catBars');
+  const catEmpty=document.getElementById('catBarsEmpty');
+  if(Object.keys(bc).length===0){catBars.innerHTML='';catEmpty.style.display='block';}
+  else{
+    catEmpty.style.display='none';
+    const maxAmt=Math.max(...Object.values(bc));
+    catBars.innerHTML=Object.entries(bc).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>`
+      <div class="cat-bar-row">
+        <div class="cat-bar-label"><span>${CAT_ICONS[cat]||'📦'}</span><span>${cat}</span></div>
+        <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${maxAmt>0?Math.round(amt/maxAmt*100):0}%;background:${CAT_COLORS[cat]||'#94A3B8'}"></div></div>
+        <div class="cat-bar-amt">${fmt(amt)}</div>
+      </div>`).join('');
+  }
+
+  // Recent expenses
+  const recentList=document.getElementById('recentList');
+  const recentEmpty=document.getElementById('recentEmpty');
+  const recent=DB.expenses.slice().reverse().slice(0,5);
+  if(!recent.length){recentList.innerHTML='';recentEmpty.style.display='block';}
+  else{
+    recentEmpty.style.display='none';
+    recentList.innerHTML=recent.map(e=>`
+      <div class="recent-row">
+        <div class="recent-cat-icon">${CAT_ICONS[e.cat]||'📦'}</div>
+        <div class="recent-info"><div class="recent-desc">${e.desc}</div><div class="recent-cat">${e.cat} • ${e.date}</div></div>
+        <div class="recent-amt">-${fmt(e.amt)}</div>
+      </div>`).join('');
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   EXPENSES
+═══════════════════════════════════════════════ */
+let selectedCat='Food';
+function selectCat(btn, cat) {
+  document.querySelectorAll('.cat-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedCat=cat;
+}
+
+function addExpense() {
+  const amt=parseFloat(document.getElementById('expAmt').value);
+  const desc=document.getElementById('expDesc').value.trim();
+  const date=document.getElementById('expDate').value;
+  if(!amt||amt<=0){showToast('Enter a valid amount','err');return;}
+  if(!desc){showToast('Enter a description','err');return;}
+  DB.expenses.push({id:uid(),cat:selectedCat,desc,amt,date:date||new Date().toISOString().split('T')[0]});
+  document.getElementById('expAmt').value='';
+  document.getElementById('expDesc').value='';
+  document.getElementById('expAmtPreview').textContent=DB.currency+'0.00';
+  showToast('✅ Expense added!','ok');
+  refreshExpenses();
+}
+
+function removeExpense(id) {
+  DB.expenses=DB.expenses.filter(e=>e.id!==id);
+  refreshExpenses();
+  showToast('Expense removed','ok');
+}
+
+function refreshExpenses() {
+  const list=document.getElementById('allExpensesList');
+  const empty=document.getElementById('allExpEmpty');
+  if(!DB.expenses.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=DB.expenses.slice().reverse().map(e=>`
+    <div class="exp-row">
+      <div class="exp-icon">${CAT_ICONS[e.cat]||'📦'}</div>
+      <div class="exp-info"><div class="exp-desc">${e.desc}</div><div class="exp-meta">${e.cat} • ${e.date}</div></div>
+      <div class="exp-amt">-${fmt(e.amt)}</div>
+      <button class="exp-del" onclick="removeExpense('${e.id}')">🗑</button>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════════
+   BUDGET
+═══════════════════════════════════════════════ */
+function initBudgetRows() {
+  document.getElementById('budgetLimitRows').innerHTML=CATS.map(cat=>`
+    <div class="bcat-row">
+      <div class="bcat-icon">${CAT_ICONS[cat]}</div>
+      <div class="bcat-name">${cat}</div>
+      <input type="number" class="bcat-inp" id="bl_${cat}" placeholder="Limit" value="${DB.budget[cat]||''}"/>
+    </div>`).join('');
+}
+
+function refreshBudgetPage() {
+  initBudgetRows();
+  document.getElementById('budgetIncome').value=DB.income||'';
+  document.getElementById('savGoal').value=DB.savings.goal||'';
+  document.getElementById('savSaved').value=DB.savings.saved||'';
+  updateSavingsDisplay();
+}
+
+function saveIncome() {
+  const v=parseFloat(document.getElementById('budgetIncome').value);
+  if(!v||v<=0){showToast('Enter valid income','err');return;}
+  DB.income=v;
+  showToast('✅ Income saved!','ok');
+}
+
+function saveBudgets() {
+  CATS.forEach(cat=>{
+    const el=document.getElementById('bl_'+cat);
+    if(el){const v=parseFloat(el.value);DB.budget[cat]=v>0?v:0;}
+  });
+  showToast('✅ Budget limits saved!','ok');
+}
+
+function saveSavings() {
+  DB.savings.goal=parseFloat(document.getElementById('savGoal').value)||0;
+  DB.savings.saved=parseFloat(document.getElementById('savSaved').value)||0;
+  updateSavingsDisplay();
+  showToast('✅ Savings updated!','ok');
+}
+
+function updateSavingsDisplay() {
+  const disp=document.getElementById('savingsDisplay');
+  if(!DB.savings.goal){disp.style.display='none';return;}
+  disp.style.display='block';
+  const pct=Math.min(100,Math.round(DB.savings.saved/DB.savings.goal*100));
+  document.getElementById('savingsVal').textContent=fmt(DB.savings.saved);
+  document.getElementById('savingsSub').textContent=pct+'% of '+fmt(DB.savings.goal)+' goal';
+  document.getElementById('savingsBar').style.width=pct+'%';
+}
+
+/* ═══════════════════════════════════════════════
+   AI ANALYZE (calls backend)
+═══════════════════════════════════════════════ */
+function addAERow() {
+  const div=document.createElement('div');
+  div.className='ae-row';
+  div.innerHTML=`
+    <select class="ae-cat">
+      ${CATS.map(c=>`<option>${c}</option>`).join('')}
+    </select>
+    <input type="number" class="ae-amt" placeholder="Amount"/>
+    <input type="text" class="ae-desc" placeholder="Description"/>
+    <button class="ae-remove" onclick="removeAERow(this)">✕</button>`;
+  document.getElementById('aiExpensesList').appendChild(div);
+}
+
+function removeAERow(btn) {
+  const rows=document.querySelectorAll('#aiExpensesList .ae-row');
+  if(rows.length<=1){showToast('Keep at least one expense row','warn');return;}
+  btn.closest('.ae-row').remove();
+}
+
+async function runAnalysis() {
+  const income=document.getElementById('aiIncome').value.trim();
+  const savGoal=document.getElementById('aiSavingsGoal').value.trim();
+  const errEl=document.getElementById('analyzeError');
+  errEl.classList.add('hide');
+
+  if(!income){errEl.textContent='Monthly income is required.';errEl.classList.remove('hide');return;}
+
+  const rows=document.querySelectorAll('#aiExpensesList .ae-row');
+  const expenses=[];
+  for(const row of rows){
+    const cat=row.querySelector('.ae-cat').value;
+    const amt=parseFloat(row.querySelector('.ae-amt').value);
+    const desc=row.querySelector('.ae-desc').value.trim();
+    if(amt>0) expenses.push({category:cat,amount:amt,description:desc||cat});
+  }
+  if(!expenses.length){errEl.textContent='Add at least one expense with an amount.';errEl.classList.remove('hide');return;}
+
+  // Show loading
+  const btn=document.getElementById('analyzeBtn');
+  document.getElementById('analyzeBtnText').textContent='Analyzing...';
+  document.getElementById('analyzeSpinner').classList.remove('hide');
+  btn.disabled=true;
+
+  try {
+    const res=await fetch('/analyze',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({income,expenses,savings_goal:savGoal,currency:DB.currency})
+    });
+    const data=await res.json();
+    if(!res.ok||data.error) throw new Error(data.error||'Analysis failed');
+
+    const card=document.getElementById('analysisCard');
+    card.style.display='block';
+
+    // Summary row
+    const s=data.summary;
+    document.getElementById('analysisSummary').innerHTML=`
+      <div class="ai-sum-grid">
+        <div class="ai-sum-item"><div class="ai-sum-val" style="color:#3B6EF8">${DB.currency}${s.income.toLocaleString()}</div><div class="ai-sum-lbl">Income</div></div>
+        <div class="ai-sum-item"><div class="ai-sum-val" style="color:#F03E3E">${DB.currency}${s.total_spent.toFixed(2)}</div><div class="ai-sum-lbl">Spent</div></div>
+        <div class="ai-sum-item"><div class="ai-sum-val" style="color:#12C784">${DB.currency}${s.remaining.toFixed(2)}</div><div class="ai-sum-lbl">Remaining</div></div>
+        <div class="ai-sum-item"><div class="ai-sum-val" style="color:#8B5CF6">${s.spent_pct}%</div><div class="ai-sum-lbl">Used</div></div>
+      </div>`;
+
+    // Format AI text into cards
+    document.getElementById('analysisText').innerHTML=formatAnalysis(data.analysis);
+    card.scrollIntoView({behavior:'smooth',block:'start'});
+    showToast('✅ Analysis complete!','ok');
+
+  } catch(e) {
+    errEl.textContent='Error: '+e.message;
+    errEl.classList.remove('hide');
+    showToast('Analysis failed','err');
+  } finally {
+    document.getElementById('analyzeBtnText').textContent='🤖 Analyze My Budget';
+    document.getElementById('analyzeSpinner').classList.add('hide');
+    btn.disabled=false;
+  }
+}
+
+function formatAnalysis(text) {
+  // Convert markdown-ish sections into styled cards
+  const sections=text.split(/##\s+/g).filter(Boolean);
+  if(sections.length<=1) return `<div class="analysis-block">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
+  return sections.map(s=>{
+    const lines=s.split('\n');
+    const title=lines[0];
+    const body=lines.slice(1).join('\n').trim()
+      .replace(/\n/g,'<br>')
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g,'<em>$1</em>');
+    return `<div class="analysis-section"><div class="analysis-sec-title">${title}</div><div class="analysis-sec-body">${body}</div></div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════
+   FLOATING CHATBOT (calls backend)
+═══════════════════════════════════════════════ */
+function toggleChatbot() {
+  document.getElementById('cbPanel').classList.toggle('open');
+}
+
+async function cbSend(msg) {
+  msg=msg.trim(); if(!msg) return;
+  const input=document.getElementById('cbInput');
+  input.value='';
+  cbAppend('user',msg);
+  cbTyping(true);
+  const sendBtn=document.getElementById('cbSendBtn');
+  sendBtn.disabled=true;
+  // Clear welcome
+  const wc=document.querySelector('.cb-welcome');
+  if(wc)wc.remove();
+
+  try {
+    const res=await fetch('/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        message:msg,
+        context:{income:DB.income,total_spent:totalSpent(),currency:DB.currency,expenses:DB.expenses}
+      })
+    });
+    const data=await res.json();
+    cbTyping(false);
+    cbAppend('ai',data.reply||data.error||'Sorry, I could not process that.');
+  } catch(e) {
+    cbTyping(false);
+    cbAppend('ai','⚠️ Could not reach AI. Make sure Flask server is running!');
+  } finally {
+    sendBtn.disabled=false;
+  }
+}
+
+function cbAppend(role,text) {
+  const el=document.getElementById('cbMsgs');
+  const d=document.createElement('div');
+  d.className='cb-row '+role;
+  d.innerHTML=`<div class="cb-av ${role}">${role==='ai'?'🤖':'👤'}</div><div class="cb-bub ${role}">${text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div>`;
+  el.appendChild(d);
+  el.scrollTop=el.scrollHeight;
+}
+
+function cbTyping(show) {
+  const el=document.getElementById('cbMsgs');
+  if(show){
+    const d=document.createElement('div');d.id='cbTyp';d.className='cb-row';
+    d.innerHTML=`<div class="cb-av ai">🤖</div><div class="cb-typing"><span></span><span></span><span></span></div>`;
+    el.appendChild(d);el.scrollTop=el.scrollHeight;
+  } else {document.getElementById('cbTyp')?.remove();}
+}
+
+/* Init */
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('expDate').value=new Date().toISOString().split('T')[0];
+});
+</script>
+</body>
+</html>
