@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PocketSmart — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0f1e;--surface:#111827;--surface2:#1a2236;
+  --accent:#6ee7b7;--gold:#fbbf24;--rose:#f87171;--sky:#38bdf8;--purple:#a78bfa;
+  --text:#f1f5f9;--muted:#94a3b8;--border:#1e293b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
+h2,h3{font-family:'Syne',sans-serif}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(110,231,183,.3);border-radius:2px}
+
+/* ── Background ── */
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(110,231,183,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(110,231,183,.03) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,#000 30%,transparent 100%)}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);animation:drift 10s ease-in-out infinite}
+.o1{width:500px;height:500px;background:rgba(110,231,183,.07);top:-150px;left:-150px}
+.o2{width:400px;height:400px;background:rgba(56,189,248,.07);bottom:-100px;right:-100px;animation-delay:4s}
+.o3{width:280px;height:280px;background:rgba(167,139,250,.05);top:35%;left:50%;animation-delay:7s}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(25px,-20px) scale(1.06)}}
+
+/* ── Layout ── */
+.page{position:relative;z-index:1;height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.box{display:flex;width:100%;max-width:920px;height:580px;background:var(--surface);border:1px solid rgba(110,231,183,.13);border-radius:24px;overflow:hidden;box-shadow:0 0 100px rgba(0,0,0,.6);animation:popIn .5s cubic-bezier(.16,1,.3,1) both}
+@keyframes popIn{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:none}}
+
+/* ── Left panel ── */
+.left{width:42%;background:linear-gradient(160deg,#0d1929 0%,#091422 55%,#0c1a2d 100%);border-right:1px solid rgba(110,231,183,.08);padding:38px 36px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;flex-shrink:0}
+.left::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 320px 350px at 20% 75%,rgba(110,231,183,.06) 0%,transparent 70%);pointer-events:none}
+.logo{display:flex;align-items:center;gap:12px;position:relative;z-index:1;animation:up .5s .1s both}
+.logo-ic{width:46px;height:46px;background:linear-gradient(135deg,var(--accent),var(--sky));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 24px rgba(110,231,183,.28);flex-shrink:0}
+.logo-name{font-size:20px;font-weight:800;font-family:'Syne',sans-serif;line-height:1.1}
+.logo-tag{font-size:10px;color:var(--muted);margin-top:1px}
+.lbody{position:relative;z-index:1;animation:up .5s .2s both}
+.lbody h2{font-size:27px;line-height:1.2;margin-bottom:11px}
+.lbody h2 span{background:linear-gradient(135deg,var(--accent),var(--sky));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.lbody p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:26px}
+.feats{display:flex;flex-direction:column;gap:15px}
+.feat{display:flex;align-items:flex-start;gap:11px}
+.feat-ic{width:33px;height:33px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:1px}
+.feat p{font-size:12.5px;color:var(--muted);line-height:1.4;margin:0}
+.feat strong{color:var(--text);font-weight:600;display:block;margin-bottom:2px}
+.lfooter{position:relative;z-index:1;animation:up .5s .35s both;display:flex;gap:7px;flex-wrap:wrap}
+.bdg{padding:4px 12px;border-radius:20px;font-size:10.5px;font-weight:600;background:rgba(110,231,183,.08);border:1px solid rgba(110,231,183,.18);color:var(--accent)}
+
+/* ── Right panel ── */
+.right{flex:1;padding:36px 38px;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;background:var(--surface2);border-radius:11px;padding:3px;margin-bottom:22px;animation:up .5s .15s both}
+.tab{flex:1;padding:9px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:8px;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:6px}
+.tab.active{background:linear-gradient(135deg,var(--accent),var(--sky));color:#0a0f1e;box-shadow:0 2px 12px rgba(110,231,183,.25)}
+.tab:not(.active):hover{color:var(--text);background:rgba(255,255,255,.04)}
+
+/* Forms */
+.form{display:none}.form.active{display:block;animation:slideUp .25s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.ftitle{font-size:22px;font-weight:800;font-family:'Syne',sans-serif;margin-bottom:4px}
+.fsub{font-size:12.5px;color:var(--muted);margin-bottom:17px;line-height:1.5}
+
+/* Alerts */
+.alert{border-radius:9px;padding:9px 13px;font-size:12.5px;margin-bottom:12px;display:none;align-items:center;gap:8px}
+.alert.err{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.28);color:var(--rose)}
+.alert.suc{background:rgba(110,231,183,.1);border:1px solid rgba(110,231,183,.28);color:var(--accent)}
+.alert.show{display:flex}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.shake{animation:shake .4s ease}
+
+/* Fields */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;margin-bottom:6px}
+.iw{position:relative}
+.iw .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;transition:color .2s;z-index:1}
+.iw input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 13px 10px 38px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13.5px;transition:all .2s;outline:none}
+.iw input:focus{border-color:var(--accent);background:rgba(110,231,183,.025);box-shadow:0 0 0 3px rgba(110,231,183,.07)}
+.iw:focus-within .ic{color:var(--accent)}
+.iw .eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:2px;transition:color .2s;z-index:1}
+.iw .eye:hover{color:var(--text)}
+.forgot{text-align:right;margin-top:-6px;margin-bottom:14px}
+.forgot a{font-size:11.5px;color:var(--accent);text-decoration:none;opacity:.75;transition:opacity .2s}
+.forgot a:hover{opacity:1}
+
+/* Password strength */
+.pws{margin-top:7px;display:none}
+.pwb{display:flex;gap:3px;margin-bottom:4px}
+.seg{flex:1;height:3px;border-radius:2px;background:var(--surface2);transition:background .3s}
+.pwl{font-size:11px;color:var(--muted)}
+
+/* Checkbox */
+.chk{display:flex;align-items:flex-start;gap:8px;margin-bottom:13px}
+.chk input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;margin-top:2px;flex-shrink:0}
+.chk label{font-size:11.5px;color:var(--muted);line-height:1.5;cursor:pointer}
+.chk a{color:var(--accent);text-decoration:none}
+
+/* Submit */
+.sbtn{width:100%;background:linear-gradient(135deg,var(--accent),var(--sky));border:none;border-radius:11px;padding:12px;font-family:'Syne',sans-serif;font-size:14.5px;font-weight:700;color:#0a0f1e;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;position:relative;overflow:hidden}
+.sbtn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.14),transparent);opacity:0;transition:opacity .2s}
+.sbtn:hover::after{opacity:1}
+.sbtn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(110,231,183,.3)}
+.sbtn:active{transform:translateY(0)}
+.sbtn.loading{opacity:.65;pointer-events:none}
+.ffoot{font-size:11.5px;color:var(--muted);text-align:center}
+.ffoot a{color:var(--accent);text-decoration:none;font-weight:500}
+
+/* Redirect overlay */
+.overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;opacity:0;pointer-events:none;transition:opacity .35s ease}
+.overlay.show{opacity:1;pointer-events:all}
+.spin{width:46px;height:46px;border-radius:50%;border:3px solid rgba(110,231,183,.15);border-top-color:var(--accent);animation:spin .7s linear infinite}
+.ov-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800}
+.ov-sub{font-size:13px;color:var(--muted)}
+
+.toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 16px;font-size:13px;box-shadow:0 8px 32px rgba(0,0,0,.4);display:flex;align-items:center;gap:9px;animation:toastIn .3s ease}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:700px){.box{flex-direction:column;height:auto;max-height:96vh;overflow-y:auto}.left{width:100%;padding:24px;min-height:auto}.feats{display:none}.right{padding:24px}}
+</style>
+</head>
+<body>
+
+<div class="bg"><div class="bg-grid"></div><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+
+<!-- Loading overlay shown after login before redirect -->
+<div class="overlay" id="overlay">
+  <div class="spin"></div>
+  <div class="ov-name" id="ov-name">Welcome!</div>
+  <div class="ov-sub">Loading your dashboard...</div>
+</div>
+
+<div class="page">
+ <div class="box">
+
+  <!-- LEFT BRANDING -->
+  <div class="left">
+    <div class="logo">
+      <div class="logo-ic">💰</div>
+      <div><div class="logo-name">PocketSmart</div><div class="logo-tag">AI Finance Assistant</div></div>
+    </div>
+    <div class="lbody">
+      <h2>Your money,<br><span>smarter every day</span></h2>
+      <p>AI-powered budgeting that learns your habits and gives real-time recommendations to grow your wealth.</p>
+      <div class="feats">
+        <div class="feat"><div class="feat-ic" style="background:rgba(110,231,183,.1);color:var(--accent)"><i class="fa fa-robot"></i></div><p><strong>AI Chatbot</strong>Ask anything about your budget in real-time</p></div>
+        <div class="feat"><div class="feat-ic" style="background:rgba(56,189,248,.1);color:var(--sky)"><i class="fa fa-chart-pie"></i></div><p><strong>Smart Analytics</strong>Visual spending breakdown &amp; health score</p></div>
+        <div class="feat"><div class="feat-ic" style="background:rgba(251,191,36,.1);color:var(--gold)"><i class="fa fa-lightbulb"></i></div><p><strong>AI Recommendations</strong>Home, party &amp; jewelry planners</p></div>
+      </div>
+    </div>
+    <div class="lfooter"><span class="bdg">🔒 Secure</span><span class="bdg">✨ Free Forever</span><span class="bdg">🤖 AI Powered</span></div>
+  </div>
+
+  <!-- RIGHT FORM -->
+  <div class="right">
+    <div class="tabs">
+      <button class="tab active" id="tab-login" onclick="switchTab('login')"><i class="fa fa-arrow-right-to-bracket"></i> Sign In</button>
+      <button class="tab" id="tab-signup" onclick="switchTab('signup')"><i class="fa fa-user-plus"></i> Create Account</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="form active" id="form-login">
+      <div class="ftitle">Welcome back 👋</div>
+      <p class="fsub">Sign in to continue tracking your finances.</p>
+      <div class="alert err" id="login-err"><i class="fa fa-circle-exclamation"></i><span id="login-err-msg"></span></div>
+      <div class="alert suc" id="login-suc"><i class="fa fa-check-circle"></i><span>Signed in! Loading your dashboard...</span></div>
+      <div class="field"><label>Username</label><div class="iw"><i class="fa fa-at ic"></i><input type="text" id="l-user" placeholder="Your username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/></div></div>
+      <div class="field"><label>Email Address</label><div class="iw"><i class="fa fa-envelope ic"></i><input type="email" id="l-email" placeholder="you@example.com" autocomplete="email" onkeydown="if(event.key==='Enter')doLogin()"/></div></div>
+      <div class="field"><label>Password</label><div class="iw"><i class="fa fa-lock ic"></i><input type="password" id="l-pw" placeholder="Your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/><button class="eye" onclick="tglPw('l-pw',this)" tabindex="-1"><i class="fa fa-eye"></i></button></div></div>
+      <div class="forgot"><a href="#" onclick="forgotPw(event)">Forgot password?</a></div>
+      <button class="sbtn" id="login-btn" onclick="doLogin()"><i class="fa fa-arrow-right-to-bracket"></i> Sign In</button>
+      <div class="ffoot">No account? <a href="#" onclick="switchTab('signup');return false">Create one free →</a></div>
+    </div>
+
+    <!-- SIGNUP -->
+    <div class="form" id="form-signup">
+      <div class="ftitle">Create account 🚀</div>
+      <p class="fsub">Start your AI-powered financial journey. It's free.</p>
+      <div class="alert err" id="signup-err"><i class="fa fa-circle-exclamation"></i><span id="signup-err-msg"></span></div>
+      <div class="row2">
+        <div class="field"><label>First Name</label><div class="iw"><i class="fa fa-user ic"></i><input type="text" id="s-fname" placeholder="Alex" autocomplete="given-name"/></div></div>
+        <div class="field"><label>Last Name</label><div class="iw"><i class="fa fa-user ic"></i><input type="text" id="s-lname" placeholder="Johnson" autocomplete="family-name"/></div></div>
+      </div>
+      <div class="field"><label>Username</label><div class="iw"><i class="fa fa-at ic"></i><input type="text" id="s-user" placeholder="Choose a username" autocomplete="username"/></div></div>
+      <div class="field"><label>Email Address</label><div class="iw"><i class="fa fa-envelope ic"></i><input type="email" id="s-email" placeholder="you@example.com" autocomplete="email"/></div></div>
+      <div class="field"><label>Password</label><div class="iw"><i class="fa fa-lock ic"></i><input type="password" id="s-pw" placeholder="Create a strong password" oninput="checkPw(this.value)" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSignup()"/><button class="eye" onclick="tglPw('s-pw',this)" tabindex="-1"><i class="fa fa-eye"></i></button></div>
+        <div class="pws" id="pws"><div class="pwb"><div class="seg" id="ps1"></div><div class="seg" id="ps2"></div><div class="seg" id="ps3"></div><div class="seg" id="ps4"></div></div><div class="pwl" id="psl">Weak</div></div>
+      </div>
+      <div class="chk"><input type="checkbox" id="s-agree"/><label for="s-agree">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label></div>
+      <button class="sbtn" id="signup-btn" onclick="doSignup()"><i class="fa fa-user-plus"></i> Create Account</button>
+      <div class="ffoot">Already have an account? <a href="#" onclick="switchTab('login');return false">Sign in →</a></div>
+    </div>
+
+  </div>
+ </div>
+</div>
+
+<script>
+document.head.insertAdjacentHTML('beforeend','<style>@keyframes spin{to{transform:rotate(360deg)}}</style>');
+const SP='<div style="width:16px;height:16px;border:2px solid rgba(10,15,30,.4);border-top-color:#0a0f1e;border-radius:50%;animation:spin .6s linear infinite"></div>';
+
+/* ── Auto-redirect if already logged in ── */
+(function(){
+  try{
+    const u=JSON.parse(localStorage.getItem('ps_user')||'null');
+    if(u&&u.name){
+      document.getElementById('ov-name').textContent='Welcome back, '+u.name.split(' ')[0]+'!';
+      document.getElementById('overlay').classList.add('show');
+      setTimeout(()=>{ window.location.href='index.html'; },800);
+    }
+  }catch(e){}
+})();
+
+function switchTab(t){
+  const l=t==='login';
+  document.getElementById('tab-login').classList.toggle('active',l);
+  document.getElementById('tab-signup').classList.toggle('active',!l);
+  document.getElementById('form-login').classList.toggle('active',l);
+  document.getElementById('form-signup').classList.toggle('active',!l);
+  hideAlerts();
+}
+function hideAlerts(){['login-err','login-suc','signup-err'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.remove('show')});}
+function showErr(fid,msg){
+  const el=document.getElementById(fid+'-err');
+  document.getElementById(fid+'-err-msg').textContent=msg;
+  el.classList.add('show');
+  el.closest('.form').classList.add('shake');
+  setTimeout(()=>el.closest('.form').classList.remove('shake'),420);
+}
+function tglPw(id,btn){const i=document.getElementById(id),s=i.type==='password';i.type=s?'text':'password';btn.innerHTML=s?'<i class="fa fa-eye-slash"></i>':'<i class="fa fa-eye"></i>';}
+function checkPw(val){
+  const w=document.getElementById('pws');w.style.display=val?'block':'none';
+  const segs=['ps1','ps2','ps3','ps4'].map(id=>document.getElementById(id)),lbl=document.getElementById('psl');
+  let s=0;if(val.length>=8)s++;if(/[A-Z]/.test(val))s++;if(/[0-9]/.test(val))s++;if(/[^A-Za-z0-9]/.test(val))s++;
+  const c=['#f87171','#fbbf24','#38bdf8','#6ee7b7'],l=['Weak','Fair','Good','Strong'];
+  segs.forEach((sg,i)=>sg.style.background=i<s?c[s-1]:'var(--surface2)');
+  lbl.textContent=s>0?l[s-1]:'Weak';lbl.style.color=s>0?c[s-1]:'var(--muted)';
+}
+
+/* ── Core: save session → redirect to index.html ── */
+function enterApp(name,username,email){
+  localStorage.setItem('ps_user',JSON.stringify({name,username,email}));
+  document.getElementById('ov-name').textContent='Welcome, '+name.split(' ')[0]+'!';
+  document.getElementById('overlay').classList.add('show');
+  setTimeout(()=>{ window.location.href='index.html'; },1100);
+}
+
+function doLogin(){
+  hideAlerts();
+  const user=document.getElementById('l-user').value.trim();
+  const email=document.getElementById('l-email').value.trim();
+  const pw=document.getElementById('l-pw').value;
+  if(!user)                 {showErr('login','Please enter your username.');return;}
+  if(!email)                {showErr('login','Please enter your email address.');return;}
+  if(!email.includes('@'))  {showErr('login','Please enter a valid email address.');return;}
+  if(!pw)                   {showErr('login','Please enter your password.');return;}
+  if(pw.length<6)           {showErr('login','Password must be at least 6 characters.');return;}
+  const btn=document.getElementById('login-btn');
+  btn.classList.add('loading');btn.innerHTML=SP+' Signing in...';
+  setTimeout(()=>{
+    btn.classList.remove('loading');btn.innerHTML='<i class="fa fa-arrow-right-to-bracket"></i> Sign In';
+    document.getElementById('login-suc').classList.add('show');
+    setTimeout(()=>enterApp(user,user,email),900);
+  },1500);
+}
+
+function doSignup(){
+  hideAlerts();
+  const fname=document.getElementById('s-fname').value.trim();
+  const lname=document.getElementById('s-lname').value.trim();
+  const user=document.getElementById('s-user').value.trim();
+  const email=document.getElementById('s-email').value.trim();
+  const pw=document.getElementById('s-pw').value;
+  const agree=document.getElementById('s-agree').checked;
+  if(!fname||!lname)                   {showErr('signup','Please enter your full name.');return;}
+  if(!user)                            {showErr('signup','Please choose a username.');return;}
+  if(user.length<3)                    {showErr('signup','Username must be at least 3 characters.');return;}
+  if(!/^[a-zA-Z0-9_.-]+$/.test(user)) {showErr('signup','Username: letters, numbers, _ . - only.');return;}
+  if(!email||!email.includes('@'))     {showErr('signup','Please enter a valid email address.');return;}
+  if(pw.length<6)                      {showErr('signup','Password must be at least 6 characters.');return;}
+  if(!agree)                           {showErr('signup','Please agree to the Terms of Service.');return;}
+  const btn=document.getElementById('signup-btn');
+  btn.classList.add('loading');btn.innerHTML=SP+' Creating account...';
+  setTimeout(()=>{
+    btn.classList.remove('loading');btn.innerHTML='<i class="fa fa-user-plus"></i> Create Account';
+    enterApp(fname+' '+lname,user,email);
+  },1600);
+}
+
+function forgotPw(e){
+  e.preventDefault();
+  const email=document.getElementById('l-email').value.trim();
+  if(!email){showErr('login','Enter your email first, then click Forgot password.');return;}
+  const t=document.createElement('div');t.className='toast';
+  t.innerHTML='<i class="fa fa-check-circle" style="color:var(--accent)"></i>Reset link sent to '+email;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),3200);
+}
+</script>
+</body>
+</html>

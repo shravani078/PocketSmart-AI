@@ -2,868 +2,546 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>PocketSmart AI — Smart Budget Assistant</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="/static/styles.css"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PocketSmart AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0f1e;--surface:#111827;--surface2:#1a2236;--surface3:#1e293b;
+  --accent:#6ee7b7;--accent2:#34d399;--gold:#fbbf24;--rose:#f87171;--sky:#38bdf8;--purple:#a78bfa;
+  --text:#f1f5f9;--muted:#94a3b8;--border:#1e293b;--radius:16px;--shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+h1,h2,h3,h4{font-family:'Syne',sans-serif}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--surface)}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
+
+/* Layout */
+.app{display:flex;height:100vh}
+.sidebar{width:240px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 0;overflow:hidden}
+.main{flex:1;overflow-y:auto;padding:28px;background:var(--bg)}
+
+/* Sidebar */
+.sb-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.sb-brand{display:flex;align-items:center;gap:10px}
+.sb-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--sky));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.sb-name{font-size:17px;font-weight:800}
+.sb-tag{font-size:10px;color:var(--muted)}
+.sb-section{padding:14px 20px 6px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;color:var(--muted);font-size:13.5px;font-weight:500}
+.nav-item:hover{color:var(--text);background:var(--surface2);border-left-color:rgba(110,231,183,.4)}
+.nav-item.active{color:var(--accent);background:var(--surface2);border-left-color:var(--accent)}
+.nav-item i{width:16px;text-align:center;font-size:13px}
+.sb-bottom{margin-top:auto;padding:14px 20px;border-top:1px solid var(--border)}
+.user-badge{display:flex;align-items:center;gap:9px;padding:9px;background:var(--surface2);border-radius:10px;margin-bottom:8px}
+.u-avatar{width:32px;height:32px;background:linear-gradient(135deg,var(--purple),var(--sky));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.u-name{font-size:13px;font-weight:600}
+.u-meta{font-size:11px;color:var(--muted)}
+/* Logout button */
+.logout-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:8px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:9px;color:var(--rose);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.logout-btn:hover{background:rgba(248,113,113,.15);border-color:rgba(248,113,113,.4)}
+
+/* Pages */
+.page{display:none}.page.active{display:block}
+.page-header{margin-bottom:28px}
+.page-header h2{font-size:26px;font-weight:800;margin-bottom:3px}
+.page-header p{color:var(--muted);font-size:13px}
+
+/* Stat Cards */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--accent))}
+.stat-card .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:7px;font-weight:600}
+.stat-card .val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:3px}
+.stat-card .sub{font-size:11px;color:var(--muted)}
+.stat-card .ico{position:absolute;right:18px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px}
+.card-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:0}
+.card-title{font-size:15px;font-weight:700;margin-bottom:16px}
+
+/* Chart bars */
+.bar-wrap{margin-bottom:11px}
+.bar-lbl{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px}
+.bar-lbl span:last-child{color:var(--accent);font-weight:600}
+.bar-track{height:7px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--sky))}
+
+/* Health ring */
+.health-wrap{text-align:center}
+.health-ring{position:relative;width:110px;height:110px;margin:0 auto 14px}
+.health-ring svg{transform:rotate(-90deg)}
+.score-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-num{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--accent)}
+.score-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.health-label{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.alert-ok{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(110,231,183,.1);border:1px solid rgba(110,231,183,.3);border-radius:20px;font-size:12px;color:var(--accent)}
+
+/* Expense table */
+.expense-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:end}
+.field-lbl{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:5px;font-weight:600}
+.inp{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;width:100%}
+.btn-add{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:9px;padding:9px 16px;color:#0a0f1e;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.etable{width:100%;border-collapse:collapse}
+.etable th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:9px 11px;border-bottom:1px solid var(--border)}
+.etable td{padding:11px;border-bottom:1px solid var(--border);font-size:13px}
+.etable tr:last-child td{border-bottom:none}
+.cat-badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:500;background:rgba(110,231,183,.1);color:var(--accent)}
+.del-btn{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:7px;padding:5px 9px;color:var(--rose);font-size:11px;cursor:pointer}
+
+/* Chat */
+.chat-page{display:flex;flex-direction:column;height:calc(100vh - 56px)}
+.chat-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.ai-status{font-size:12px;color:var(--accent);margin-top:2px}
+.qp-row{display:flex;gap:7px;flex-wrap:wrap;padding:11px 0;border-bottom:1px solid var(--border);flex-shrink:0}
+.qp{padding:6px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;font-size:11.5px;cursor:pointer;color:var(--muted);transition:all .2s;white-space:nowrap}
+.qp:hover{color:var(--accent);border-color:var(--accent)}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px 0;display:flex;flex-direction:column;gap:13px}
+.msg{max-width:74%;padding:12px 16px;border-radius:16px;font-size:13.5px;line-height:1.6}
+.msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0f1e;border-bottom-right-radius:4px;font-weight:500}
+.msg.ai{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);border-bottom-left-radius:4px}
+.msg-hd{display:flex;align-items:center;gap:7px;margin-bottom:7px;font-weight:700;font-size:12px;color:var(--accent)}
+.typing{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);border-radius:16px;border-bottom-left-radius:4px;padding:12px 16px;display:flex;gap:5px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bounce 1.4s infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+.chat-input-row{display:flex;gap:10px;align-items:center;padding-top:14px;border-top:1px solid var(--border);flex-shrink:0}
+.mic-btn{width:42px;height:42px;border-radius:11px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.chat-inp{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:11px 15px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13.5px}
+.send-btn{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:11px;cursor:pointer;color:#0a0f1e;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* Analysis */
+.focus-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+.focus-btn{padding:7px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--muted);font-size:12.5px;cursor:pointer;transition:all .2s}
+.focus-btn.active{background:rgba(110,231,183,.1);border-color:var(--accent);color:var(--accent)}
+.run-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:11px;padding:11px 22px;color:#0a0f1e;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;margin-bottom:20px}
+.analysis-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:20px;font-size:13.5px;line-height:1.85;white-space:pre-wrap}
+
+/* Recs */
+.rec-tabs{display:flex;gap:3px;margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:3px}
+.rtab{flex:1;padding:9px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:500;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .2s}
+.rtab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0f1e;font-weight:700}
+.rec-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rec-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;transition:all .2s}
+.rec-card:hover{border-color:rgba(110,231,183,.4);transform:translateY(-2px)}
+.pri{display:inline-block;padding:2px 9px;border-radius:12px;font-size:10px;font-weight:700;margin-bottom:9px;letter-spacing:.3px}
+.pri-h{background:rgba(248,113,113,.15);color:var(--rose)}
+.pri-m{background:rgba(251,191,36,.15);color:var(--gold)}
+.pri-l{background:rgba(110,231,183,.15);color:var(--accent)}
+.rec-card h4{font-size:14.5px;margin-bottom:6px}
+.rec-card p{font-size:12.5px;color:var(--muted);line-height:1.5}
+.rec-saving{margin-top:10px;font-size:12px;color:var(--accent);font-weight:600}
+
+/* Planners */
+.planner-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:18px}
+.planner-form h3{font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.form-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.get-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;padding:10px 20px;color:#0a0f1e;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;margin-top:4px}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px}
+.result-text{font-size:13.5px;line-height:1.85;white-space:pre-wrap}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px 16px;font-size:13px;z-index:9999;box-shadow:var(--shadow);display:flex;align-items:center;gap:9px;animation:toastIn .3s ease}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.page{animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
 <body>
 
-<!-- ═══════════ LOGIN PAGE ═══════════ -->
-<div id="loginPage" class="login-page">
-
-  <!-- Animated background -->
-  <div class="login-bg">
-    <div class="bg-orb orb1"></div>
-    <div class="bg-orb orb2"></div>
-    <div class="bg-orb orb3"></div>
-    <div class="bg-grid"></div>
-    <!-- Floating money particles -->
-    <div class="particle" style="--x:10%;--y:20%;--d:3s;--s:.9">💰</div>
-    <div class="particle" style="--x:85%;--y:15%;--d:4.2s;--s:1.1">📊</div>
-    <div class="particle" style="--x:70%;--y:70%;--d:2.8s;--s:.8">💎</div>
-    <div class="particle" style="--x:20%;--y:80%;--d:5s;--s:1">📈</div>
-    <div class="particle" style="--x:50%;--y:10%;--d:3.5s;--s:.7">🤖</div>
-    <div class="particle" style="--x:90%;--y:55%;--d:4s;--s:.85">✨</div>
-    <div class="particle" style="--x:5%;--y:50%;--d:3.2s;--s:1.05">💸</div>
+<div class="app" id="main-app">
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-brand">
+      <div class="sb-icon">💰</div>
+      <div><div class="sb-name">PocketSmart</div><div class="sb-tag">AI Finance Assistant</div></div>
+    </div>
   </div>
-
-  <div class="login-center">
-
-    <!-- Brand Header -->
-    <div class="login-brand">
-      <div class="login-brand-icon">💸</div>
-      <div class="login-brand-text">
-        <span class="lbt-pocket">Pocket</span><span class="lbt-smart">Smart</span>
-        <span class="lbt-ai">AI</span>
-      </div>
+  <div class="sb-section">Main</div>
+  <div class="nav-item active" onclick="go('dashboard',this)"><i class="fa fa-chart-pie"></i>Dashboard</div>
+  <div class="nav-item" onclick="go('expenses',this)"><i class="fa fa-receipt"></i>Expenses</div>
+  <div class="nav-item" onclick="go('budget',this)"><i class="fa fa-sliders"></i>Budget Limits</div>
+  <div class="sb-section">AI Tools</div>
+  <div class="nav-item" onclick="go('chat',this)"><i class="fa fa-robot"></i>AI Chatbot</div>
+  <div class="nav-item" onclick="go('analysis',this)"><i class="fa fa-magnifying-glass-chart"></i>AI Analysis</div>
+  <div class="nav-item" onclick="go('recs',this)"><i class="fa fa-lightbulb"></i>Recommendations</div>
+  <div class="sb-section">Planners</div>
+  <div class="nav-item" onclick="go('home',this)"><i class="fa fa-house"></i>Home Planner</div>
+  <div class="nav-item" onclick="go('party',this)"><i class="fa fa-champagne-glasses"></i>Party Planner</div>
+  <div class="nav-item" onclick="go('jewelry',this)"><i class="fa fa-gem"></i>Jewelry Planner</div>
+  <div class="sb-bottom">
+    <div class="user-badge">
+      <div class="u-avatar" id="u-avatar">A</div>
+      <div><div class="u-name" id="u-name">Loading...</div><div class="u-meta" id="u-meta">USD • $5,200/mo</div></div>
     </div>
-    <p class="login-tagline">Your <em>Intelligent</em> Budget & Finance Companion</p>
+    <!-- LOGOUT BUTTON — clears session and goes back to login.html -->
+    <button class="logout-btn" onclick="doLogout()"><i class="fa fa-right-from-bracket"></i> Sign Out</button>
+  </div>
+</div>
 
-    <!-- Auth Card -->
-    <div class="auth-card">
-      <!-- Tab Switcher -->
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">
-          <span class="tab-icon">🔐</span> Sign In
-        </button>
-        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">
-          <span class="tab-icon">✨</span> Create Account
-        </button>
-        <div class="tab-indicator" id="tabIndicator"></div>
-      </div>
+<!-- ══ MAIN ══ -->
+<div class="main">
 
-      <!-- LOGIN SECTION -->
-      <div class="auth-section active" id="sec-login">
-        <div class="auth-welcome">
-          <h2>Welcome back <span class="wave">👋</span></h2>
-          <p>Sign in to access your financial dashboard</p>
-        </div>
-        <div class="auth-error hide" id="loginErr"></div>
-        <div class="form-field">
-          <label>Username</label>
-          <div class="input-wrap">
-            <span class="input-icon">👤</span>
-            <input type="text" id="loginUser" placeholder="Enter your username" value="demo" autocomplete="username"/>
-          </div>
-        </div>
-        <div class="form-field">
-          <label>Password</label>
-          <div class="input-wrap">
-            <span class="input-icon">🔑</span>
-            <input type="password" id="loginPass" placeholder="Enter your password" value="demo123" autocomplete="current-password"/>
-            <button class="eye-btn" onclick="togglePw('loginPass',this)" type="button">👁</button>
-          </div>
-        </div>
-        <button class="auth-submit" onclick="doLogin()" id="loginBtn">
-          <span>Sign In</span>
-          <span class="btn-arrow">→</span>
-          <div class="btn-ripple"></div>
-        </button>
-        <p class="auth-switch">No account? <a onclick="switchTab('register')">Create one free →</a></p>
-        <div class="demo-hint">💡 Demo credentials pre-filled — just click Sign In</div>
-      </div>
-
-      <!-- REGISTER SECTION -->
-      <div class="auth-section" id="sec-register">
-        <div class="auth-welcome">
-          <h2>Get started free 🚀</h2>
-          <p>Create your PocketSmart account today</p>
-        </div>
-        <div class="auth-error hide" id="regErr"></div>
-        <div class="auth-success hide" id="regOk"></div>
-        <div class="field-row">
-          <div class="form-field">
-            <label>Full Name</label>
-            <div class="input-wrap">
-              <span class="input-icon">✍️</span>
-              <input type="text" id="regName" placeholder="John Doe"/>
-            </div>
-          </div>
-          <div class="form-field">
-            <label>Username</label>
-            <div class="input-wrap">
-              <span class="input-icon">👤</span>
-              <input type="text" id="regUser" placeholder="johndoe"/>
-            </div>
-          </div>
-        </div>
-        <div class="form-field">
-          <label>Email (optional)</label>
-          <div class="input-wrap">
-            <span class="input-icon">📧</span>
-            <input type="email" id="regEmail" placeholder="john@example.com"/>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="form-field">
-            <label>Monthly Income</label>
-            <div class="input-wrap">
-              <span class="input-icon">💰</span>
-              <input type="number" id="regIncome" placeholder="3000"/>
-            </div>
-          </div>
-          <div class="form-field">
-            <label>Currency</label>
-            <div class="input-wrap sel-wrap">
-              <span class="input-icon">🌍</span>
-              <select id="regCurrency">
-                <option value="$">USD ($)</option>
-                <option value="₹">INR (₹)</option>
-                <option value="€">EUR (€)</option>
-                <option value="£">GBP (£)</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="form-field">
-          <label>Password</label>
-          <div class="input-wrap">
-            <span class="input-icon">🔑</span>
-            <input type="password" id="regPass" placeholder="Min 6 characters"/>
-            <button class="eye-btn" onclick="togglePw('regPass',this)" type="button">👁</button>
-          </div>
-        </div>
-        <button class="auth-submit" onclick="doRegister()" id="regBtn">
-          <span>Create Account</span>
-          <span class="btn-arrow">→</span>
-          <div class="btn-ripple"></div>
-        </button>
-        <p class="auth-switch">Already have an account? <a onclick="switchTab('login')">Sign In →</a></p>
-      </div>
+<!-- Dashboard -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header"><h2>Dashboard</h2><p>Your financial overview at a glance</p></div>
+  <div class="stats-row">
+    <div class="stat-card" style="--c:var(--accent)"><div class="lbl">Monthly Income</div><div class="val">$5,200</div><div class="sub">Total budget</div><div class="ico" style="background:rgba(110,231,183,.1);color:var(--accent)"><i class="fa fa-wallet"></i></div></div>
+    <div class="stat-card" style="--c:var(--rose)"><div class="lbl">Total Spent</div><div class="val" style="color:var(--rose)">$2,840</div><div class="sub">This month</div><div class="ico" style="background:rgba(248,113,113,.1);color:var(--rose)"><i class="fa fa-arrow-trend-up"></i></div></div>
+    <div class="stat-card" style="--c:var(--sky)"><div class="lbl">Remaining</div><div class="val" style="color:var(--sky)">$2,360</div><div class="sub">Available balance</div><div class="ico" style="background:rgba(56,189,248,.1);color:var(--sky)"><i class="fa fa-piggy-bank"></i></div></div>
+    <div class="stat-card" style="--c:var(--gold)"><div class="lbl">Savings Progress</div><div class="val" style="color:var(--gold)">68%</div><div class="sub">$680 / $1,000 goal</div><div class="ico" style="background:rgba(251,191,36,.1);color:var(--gold)"><i class="fa fa-star"></i></div></div>
+  </div>
+  <div class="card-row">
+    <div class="card">
+      <div class="card-title">Spending by Category</div>
+      <div class="bar-wrap"><div class="bar-lbl"><span>🍔 Food</span><span>$820</span></div><div class="bar-track"><div class="bar-fill" style="width:89%"></div></div></div>
+      <div class="bar-wrap"><div class="bar-lbl"><span>🏠 Housing</span><span>$1,200</span></div><div class="bar-track"><div class="bar-fill" style="width:100%;background:linear-gradient(90deg,var(--purple),var(--sky))"></div></div></div>
+      <div class="bar-wrap"><div class="bar-lbl"><span>🚗 Transport</span><span>$340</span></div><div class="bar-track"><div class="bar-fill" style="width:37%;background:linear-gradient(90deg,var(--sky),var(--accent))"></div></div></div>
+      <div class="bar-wrap"><div class="bar-lbl"><span>🎮 Entertainment</span><span>$280</span></div><div class="bar-track"><div class="bar-fill" style="width:30%;background:linear-gradient(90deg,var(--gold),var(--rose))"></div></div></div>
+      <div class="bar-wrap"><div class="bar-lbl"><span>🛍️ Shopping</span><span>$200</span></div><div class="bar-track"><div class="bar-fill" style="width:22%;background:linear-gradient(90deg,var(--rose),var(--purple))"></div></div></div>
     </div>
-
-    <!-- Feature Pills -->
-    <div class="feature-pills">
-      <div class="fpill">📊 Expense Tracking</div>
-      <div class="fpill">🤖 Gemini AI</div>
-      <div class="fpill">🎯 Smart Budgets</div>
-      <div class="fpill">📈 Forecasts</div>
+    <div class="card health-wrap">
+      <div class="card-title" style="text-align:center">Financial Health</div>
+      <div class="health-ring">
+        <svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="46" fill="none" stroke="var(--surface2)" stroke-width="9"/><circle cx="55" cy="55" r="46" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="72" style="transition:all 1s ease"/></svg>
+        <div class="score-text"><div class="score-num">75</div><div class="score-lbl">score</div></div>
+      </div>
+      <div class="health-label">Good</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">You're spending 54.6% of your income. Keep it up!</p>
+      <div class="alert-ok"><i class="fa fa-check-circle"></i>All budgets on track</div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ APP SHELL ═══════════ -->
-<div id="appPage" class="app-shell hide">
-
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sb-logo">
-      <div class="sb-logo-icon">💸</div>
-      <div class="sb-logo-text">Pocket<span>Smart</span></div>
-    </div>
-    <div class="sb-section-label">Navigation</div>
-    <button class="sb-link active" id="sbl-dashboard" onclick="goPage('dashboard')">
-      <span class="sb-icon">📊</span> Dashboard
-    </button>
-    <button class="sb-link" id="sbl-analyze" onclick="goPage('analyze')">
-      <span class="sb-icon">🤖</span> AI Analyze
-    </button>
-    <button class="sb-link" id="sbl-expenses" onclick="goPage('expenses')">
-      <span class="sb-icon">➕</span> Add Expense
-    </button>
-    <button class="sb-link" id="sbl-budget" onclick="goPage('budget')">
-      <span class="sb-icon">🎯</span> Budget
-    </button>
-    <div class="sb-bottom">
-      <div class="sb-user-card">
-        <div class="sb-avatar" id="sbAvatar">A</div>
-        <div class="sb-user-info">
-          <div class="sb-username" id="sbUsername">Alex</div>
-          <div class="sb-usersub" id="sbUserSub">demo user</div>
-        </div>
-      </div>
-      <button class="sb-logout" onclick="doLogout()">🚪 Logout</button>
-    </div>
-  </aside>
-
-  <!-- Main Content -->
-  <main class="main-area">
-
-    <!-- DASHBOARD PAGE -->
-    <div class="app-page active" id="pg-dashboard">
-      <div class="page-header">
-        <h1 class="page-title" id="dashTitle">Dashboard 📊</h1>
-        <p class="page-sub" id="dashSub">Your financial overview</p>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-card s-blue">
-          <div class="sc-icon">💰</div>
-          <div class="sc-label">Monthly Income</div>
-          <div class="sc-val" id="stIncome">$0</div>
-          <div class="sc-meta">Your budget</div>
-        </div>
-        <div class="stat-card s-red">
-          <div class="sc-icon">💳</div>
-          <div class="sc-label">Total Spent</div>
-          <div class="sc-val" id="stSpent">$0</div>
-          <div class="sc-meta" id="stPct">0% used</div>
-        </div>
-        <div class="stat-card s-teal">
-          <div class="sc-icon">💵</div>
-          <div class="sc-label">Remaining</div>
-          <div class="sc-val" id="stRem">$0</div>
-          <div class="sc-meta">Available</div>
-        </div>
-        <div class="stat-card s-purple">
-          <div class="sc-icon">🧾</div>
-          <div class="sc-label">Expenses</div>
-          <div class="sc-val" id="stCount">0</div>
-          <div class="sc-meta">Logged</div>
-        </div>
-      </div>
-      <div class="dash-grid">
-        <div class="card">
-          <div class="card-title">📊 Spending by Category</div>
-          <div id="catBars"></div>
-          <div class="empty-state" id="catBarsEmpty">No expenses yet. Add some to see breakdown!</div>
-        </div>
-        <div class="card">
-          <div class="card-title">📋 Recent Expenses</div>
-          <div id="recentList"></div>
-          <div class="empty-state" id="recentEmpty">No expenses logged yet.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- AI ANALYZE PAGE -->
-    <div class="app-page" id="pg-analyze">
-      <div class="page-header">
-        <h1 class="page-title">AI Budget Analysis 🤖</h1>
-        <p class="page-sub">Let Gemini analyze your finances and give smart suggestions</p>
-      </div>
-      <div class="analyze-grid">
-        <div class="card">
-          <div class="card-title">💬 Ask Gemini AI</div>
-          <div class="form-field" style="margin-bottom:14px">
-            <label>Monthly Income</label>
-            <div class="input-wrap">
-              <span class="input-icon">💰</span>
-              <input type="number" id="aiIncome" placeholder="e.g. 3000"/>
-            </div>
-          </div>
-          <div id="aiExpensesList">
-            <div class="ae-row">
-              <select class="ae-cat">
-                <option>Food</option><option>Transport</option><option>Entertainment</option>
-                <option>Shopping</option><option>Health</option><option>Bills</option>
-                <option>Education</option><option>Other</option>
-              </select>
-              <input type="number" class="ae-amt" placeholder="Amount"/>
-              <input type="text" class="ae-desc" placeholder="Description"/>
-              <button class="ae-remove" onclick="removeAERow(this)">✕</button>
-            </div>
-          </div>
-          <button class="add-row-btn" onclick="addAERow()">＋ Add Another Expense</button>
-          <div class="form-field" style="margin-top:14px">
-            <label>Savings Goal (optional)</label>
-            <div class="input-wrap">
-              <span class="input-icon">🎯</span>
-              <input type="number" id="aiSavingsGoal" placeholder="e.g. 500"/>
-            </div>
-          </div>
-          <button class="analyze-btn" onclick="runAnalysis()" id="analyzeBtn">
-            <span id="analyzeBtnText">🤖 Analyze My Budget</span>
-            <div class="analyze-spinner hide" id="analyzeSpinner"></div>
-          </button>
-          <div class="analyze-error hide" id="analyzeError"></div>
-        </div>
-
-        <div class="card analysis-result-card" id="analysisCard" style="display:none">
-          <div class="card-title">✨ AI Insights</div>
-          <div class="analysis-summary" id="analysisSummary"></div>
-          <div class="analysis-text" id="analysisText"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ADD EXPENSE PAGE -->
-    <div class="app-page" id="pg-expenses">
-      <div class="page-header">
-        <h1 class="page-title">Add Expense ➕</h1>
-        <p class="page-sub">Log your spending to stay on budget</p>
-      </div>
-      <div class="exp-grid">
-        <div class="card">
-          <div class="amt-preview" id="expAmtPreview">$0.00</div>
-          <div class="form-field">
-            <label>Category</label>
-            <div class="cat-pills">
-              <button class="cat-pill active" onclick="selectCat(this,'Food')">🍔 Food</button>
-              <button class="cat-pill" onclick="selectCat(this,'Transport')">🚗 Transport</button>
-              <button class="cat-pill" onclick="selectCat(this,'Entertainment')">🎬 Entertainment</button>
-              <button class="cat-pill" onclick="selectCat(this,'Shopping')">🛍️ Shopping</button>
-              <button class="cat-pill" onclick="selectCat(this,'Health')">💊 Health</button>
-              <button class="cat-pill" onclick="selectCat(this,'Bills')">📄 Bills</button>
-              <button class="cat-pill" onclick="selectCat(this,'Education')">📚 Education</button>
-              <button class="cat-pill" onclick="selectCat(this,'Other')">📦 Other</button>
-            </div>
-            <input type="hidden" id="expCat" value="Food"/>
-          </div>
-          <div class="form-field">
-            <label>Amount</label>
-            <div class="input-wrap">
-              <span class="input-icon" id="expCurrIcon">$</span>
-              <input type="number" id="expAmt" placeholder="0.00" step="0.01"
-                oninput="document.getElementById('expAmtPreview').textContent=DB.currency+(parseFloat(this.value)||0).toFixed(2)"/>
-            </div>
-          </div>
-          <div class="form-field">
-            <label>Description</label>
-            <div class="input-wrap">
-              <span class="input-icon">✍️</span>
-              <input type="text" id="expDesc" placeholder="e.g. Lunch at cafe"/>
-            </div>
-          </div>
-          <div class="form-field">
-            <label>Date</label>
-            <div class="input-wrap">
-              <span class="input-icon">📅</span>
-              <input type="date" id="expDate"/>
-            </div>
-          </div>
-          <button class="auth-submit" onclick="addExpense()">Add Expense →</button>
-        </div>
-        <div class="card">
-          <div class="card-title">🧾 All Expenses</div>
-          <div id="allExpensesList"></div>
-          <div class="empty-state" id="allExpEmpty">No expenses yet. Add your first one!</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- BUDGET PAGE -->
-    <div class="app-page" id="pg-budget">
-      <div class="page-header">
-        <h1 class="page-title">Budget & Settings 🎯</h1>
-        <p class="page-sub">Set monthly limits and manage your profile</p>
-      </div>
-      <div class="budget-grid">
-        <div class="card">
-          <div class="card-title">💰 Monthly Income</div>
-          <div class="input-wrap" style="margin-bottom:12px">
-            <span class="input-icon">💵</span>
-            <input type="number" id="budgetIncome" placeholder="Monthly income"/>
-          </div>
-          <button class="small-btn" onclick="saveIncome()">Save Income</button>
-          <div class="card-title" style="margin-top:22px">📋 Category Limits</div>
-          <div id="budgetLimitRows"></div>
-          <button class="small-btn" onclick="saveBudgets()" style="margin-top:8px">Save Limits</button>
-        </div>
-        <div class="card">
-          <div class="card-title">🎯 Savings Goal</div>
-          <div class="form-field">
-            <label>Goal Amount</label>
-            <div class="input-wrap">
-              <span class="input-icon">🏆</span>
-              <input type="number" id="savGoal" placeholder="e.g. 1000"/>
-            </div>
-          </div>
-          <div class="form-field">
-            <label>Amount Saved</label>
-            <div class="input-wrap">
-              <span class="input-icon">💚</span>
-              <input type="number" id="savSaved" placeholder="e.g. 250"/>
-            </div>
-          </div>
-          <button class="small-btn" onclick="saveSavings()">Update Savings</button>
-          <div class="savings-display" id="savingsDisplay" style="margin-top:18px;display:none">
-            <div class="savings-val" id="savingsVal">$0</div>
-            <div class="savings-sub" id="savingsSub">0% of goal</div>
-            <div class="pb-track" style="height:10px;margin-top:10px">
-              <div class="pb-fill" id="savingsBar" style="width:0%;background:linear-gradient(90deg,#12C784,#34D399)"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </main>
-</div>
-
-<!-- Floating Chatbot -->
-<button class="cb-trigger" id="cbTrigger" onclick="toggleChatbot()">
-  🤖 <span class="cb-badge">AI</span>
-</button>
-<div class="cb-panel" id="cbPanel">
-  <div class="cb-header">
-    <div class="cb-hdr-av">🤖</div>
-    <div>
-      <div class="cb-hdr-name">PocketSmart AI</div>
-      <div class="cb-hdr-sub">● Gemini powered</div>
-    </div>
-    <button class="cb-close" onclick="toggleChatbot()">✕</button>
-  </div>
-  <div class="cb-msgs" id="cbMsgs">
-    <div class="cb-welcome">
-      <div class="cbw-icon">🤖</div>
-      <strong>Hi! I'm your AI assistant</strong>
-      <p>Ask me about your finances!</p>
+<!-- Expenses -->
+<div class="page" id="page-expenses">
+  <div class="page-header"><h2>Expenses</h2><p>Track and manage your spending</p></div>
+  <div class="expense-form">
+    <div class="card-title">Add New Expense</div>
+    <div class="form-grid">
+      <div><label class="field-lbl">Category</label><select class="inp"><option>Food</option><option>Transport</option><option>Housing</option><option>Entertainment</option><option>Shopping</option></select></div>
+      <div><label class="field-lbl">Amount</label><input class="inp" type="number" placeholder="0.00"/></div>
+      <div><label class="field-lbl">Description</label><input class="inp" type="text" placeholder="What was it for?"/></div>
+      <div><label class="field-lbl">Date</label><input class="inp" type="date" value="2025-02-22"/></div>
+      <div><label class="field-lbl">&nbsp;</label><button class="btn-add" onclick="addDemoExpense()"><i class="fa fa-plus"></i>Add</button></div>
     </div>
   </div>
-  <div class="cb-chips">
-    <div class="cb-chip" onclick="cbSend('How is my spending this month?')">My spending</div>
-    <div class="cb-chip" onclick="cbSend('Give me 3 saving tips')">Save tips</div>
-    <div class="cb-chip" onclick="cbSend('Am I on track with savings?')">Savings</div>
-  </div>
-  <div class="cb-input-row">
-    <textarea id="cbInput" placeholder="Ask anything..." rows="1"
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();cbSend(this.value);}"></textarea>
-    <button id="cbSendBtn" onclick="cbSend(document.getElementById('cbInput').value)">➤</button>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div class="card-title" style="margin:0">All Expenses</div>
+      <span style="font-size:12px;color:var(--muted)" id="exp-count">5 expenses</span>
+    </div>
+    <table class="etable" id="exp-table">
+      <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th></th></tr></thead>
+      <tbody id="exp-body"></tbody>
+    </table>
   </div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
+<!-- Budget Limits -->
+<div class="page" id="page-budget">
+  <div class="page-header"><h2>Budget Limits</h2><p>Set monthly spending limits per category</p></div>
+  <div class="card" style="margin-bottom:18px">
+    <div class="card-title">Set Category Limits</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div><label class="field-lbl">Food</label><input class="inp" type="number" value="900"/></div>
+      <div><label class="field-lbl">Transport</label><input class="inp" type="number" value="400"/></div>
+      <div><label class="field-lbl">Housing</label><input class="inp" type="number" value="1300"/></div>
+      <div><label class="field-lbl">Entertainment</label><input class="inp" type="number" value="300"/></div>
+      <div><label class="field-lbl">Shopping</label><input class="inp" type="number" value="250"/></div>
+      <div><label class="field-lbl">Health</label><input class="inp" type="number" value="200"/></div>
+    </div>
+    <button class="btn-add" onclick="showToast('Budget limits saved! ✅','success')"><i class="fa fa-save"></i>Save Limits</button>
+  </div>
+  <div class="card">
+    <div class="card-title">Savings Tracker</div>
+    <div class="form-2">
+      <div><label class="field-lbl">Savings Goal</label><input class="inp" type="number" value="1000"/></div>
+      <div><label class="field-lbl">Amount Saved</label><input class="inp" type="number" value="680"/></div>
+    </div>
+    <button class="btn-add" onclick="showToast('Savings updated! 💰','success')"><i class="fa fa-piggy-bank"></i>Update Savings</button>
+    <div style="margin-top:16px">
+      <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px"><span>Savings Progress</span><span style="color:var(--accent)">68%</span></div>
+      <div class="bar-track" style="height:11px;border-radius:6px"><div class="bar-fill" style="width:68%;background:linear-gradient(90deg,var(--accent),var(--sky))"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI Chat -->
+<div class="page" id="page-chat" style="display:flex;flex-direction:column;height:calc(100vh - 56px)">
+  <div class="chat-header">
+    <div><h2 style="font-size:24px;font-weight:800">AI Chatbot</h2><div class="ai-status">● PocketSmart AI — Ready</div></div>
+    <div style="display:flex;gap:8px">
+      <button style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:7px 14px;color:var(--muted);font-size:12.5px;cursor:pointer" onclick="clearDemoChat()"><i class="fa fa-trash"></i> Clear</button>
+      <button id="tts-demo-btn" style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:7px 14px;color:var(--muted);font-size:12.5px;cursor:pointer" onclick="toggleDemoTTS()"><i class="fa fa-volume-high"></i> Voice On</button>
+    </div>
+  </div>
+  <div class="qp-row">
+    <span class="qp" onclick="demoQuick(this)">💰 Analyze my spending</span>
+    <span class="qp" onclick="demoQuick(this)">🏠 Home decor ideas</span>
+    <span class="qp" onclick="demoQuick(this)">🎉 Party on budget</span>
+    <span class="qp" onclick="demoQuick(this)">💎 Jewelry recommendations</span>
+    <span class="qp" onclick="demoQuick(this)">📊 How can I save more?</span>
+  </div>
+  <div class="chat-msgs" id="chat-demo">
+    <div class="msg ai"><div class="msg-hd">🤖 PocketSmart AI</div>Hi! I'm your personal finance AI. You've spent $2,840 this month with $2,360 remaining. Your financial health score is 75 (Good)! 💚<br><br>Ask me anything — spending analysis, home decor ideas, party planning, jewelry picks, or savings advice! 💬</div>
+  </div>
+  <div class="chat-input-row">
+    <button class="mic-btn" id="mic-demo" onclick="toggleDemoMic()"><i class="fa fa-microphone"></i></button>
+    <input class="chat-inp" id="demo-input" placeholder="Ask anything about your budget..." onkeydown="if(event.key==='Enter')sendDemoChat()"/>
+    <button class="send-btn" onclick="sendDemoChat()"><i class="fa fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<!-- AI Analysis -->
+<div class="page" id="page-analysis">
+  <div class="page-header"><h2>AI Analysis</h2><p>Deep AI-powered insights into your spending</p></div>
+  <div class="focus-row">
+    <button class="focus-btn active" onclick="setDemoFocus(this)">🔍 General</button>
+    <button class="focus-btn" onclick="setDemoFocus(this)">💰 Savings</button>
+    <button class="focus-btn" onclick="setDemoFocus(this)">🍔 Food</button>
+    <button class="focus-btn" onclick="setDemoFocus(this)">🎮 Entertainment</button>
+    <button class="focus-btn" onclick="setDemoFocus(this)">🛍️ Shopping</button>
+    <button class="focus-btn" onclick="setDemoFocus(this)">📈 Investments</button>
+  </div>
+  <button class="run-btn" onclick="runDemoAnalysis()"><i class="fa fa-brain"></i> Run AI Analysis</button>
+  <div id="analysis-demo"></div>
+</div>
+
+<!-- Recommendations -->
+<div class="page" id="page-recs">
+  <div class="page-header"><h2>Smart Recommendations</h2><p>Personalized AI-powered suggestions</p></div>
+  <div class="rec-tabs">
+    <button class="rtab active" onclick="showRecs(this,'general')"><i class="fa fa-star"></i>General</button>
+    <button class="rtab" onclick="showRecs(this,'home')"><i class="fa fa-house"></i>Home</button>
+    <button class="rtab" onclick="showRecs(this,'party')"><i class="fa fa-champagne-glasses"></i>Party</button>
+    <button class="rtab" onclick="showRecs(this,'jewelry')"><i class="fa fa-gem"></i>Jewelry</button>
+  </div>
+  <div id="recs-demo"></div>
+</div>
+
+<!-- Home Planner -->
+<div class="page" id="page-home">
+  <div class="page-header"><h2>🏠 Home Budget Planner</h2><p>Smart furniture &amp; decor recommendations for your budget</p></div>
+  <div class="planner-form">
+    <h3><i class="fa fa-sliders"></i> Budget for Home Upgrade</h3>
+    <div class="form-2">
+      <div><label class="field-lbl">Total Home Budget</label><input class="inp" type="number" value="2000"/></div>
+      <div><label class="field-lbl">Room / Focus Area</label><select class="inp"><option>Living Room</option><option>Bedroom</option><option>Kitchen</option><option>Home Office</option></select></div>
+    </div>
+    <div class="form-2"><div><label class="field-lbl">Style Preference</label><select class="inp"><option>Modern Minimalist</option><option>Boho/Eclectic</option><option>Scandinavian</option><option>Industrial</option></select></div></div>
+    <button class="get-btn" onclick="showHomeDemoRecs()"><i class="fa fa-wand-magic-sparkles"></i> Get AI Recommendations</button>
+  </div>
+  <div id="home-demo-result"></div>
+</div>
+
+<!-- Party Planner -->
+<div class="page" id="page-party">
+  <div class="page-header"><h2>🎉 Party Budget Planner</h2><p>Smart budget allocation for your perfect event</p></div>
+  <div class="planner-form">
+    <h3><i class="fa fa-calendar-days"></i> Plan Your Event</h3>
+    <div class="form-2">
+      <div><label class="field-lbl">Party Budget</label><input class="inp" type="number" value="1500"/></div>
+      <div><label class="field-lbl">Event Type</label><select class="inp"><option>Birthday Party</option><option>Wedding Reception</option><option>Corporate Event</option><option>Baby Shower</option></select></div>
+    </div>
+    <div class="form-2">
+      <div><label class="field-lbl">Number of Guests</label><input class="inp" type="number" value="40"/></div>
+      <div><label class="field-lbl">Venue Preference</label><select class="inp"><option>Home/Backyard</option><option>Rented Hall</option><option>Restaurant</option></select></div>
+    </div>
+    <button class="get-btn" onclick="showPartyDemoRecs()"><i class="fa fa-wand-magic-sparkles"></i> Get AI Party Plan</button>
+  </div>
+  <div id="party-demo-result"></div>
+</div>
+
+<!-- Jewelry Planner -->
+<div class="page" id="page-jewelry">
+  <div class="page-header"><h2>💎 Jewelry Budget Planner</h2><p>Occasion-based jewelry suggestions &amp; outfit pairing</p></div>
+  <div class="planner-form">
+    <h3><i class="fa fa-gem"></i> Find Your Perfect Jewelry</h3>
+    <div class="form-2">
+      <div><label class="field-lbl">Jewelry Budget</label><input class="inp" type="number" value="300"/></div>
+      <div><label class="field-lbl">Occasion</label><select class="inp"><option>Wedding</option><option>Formal Event</option><option>Casual Everyday</option><option>Festive/Religious</option></select></div>
+    </div>
+    <div class="form-2">
+      <div><label class="field-lbl">Preferred Metal</label><select class="inp"><option>Gold</option><option>Silver</option><option>Rose Gold</option></select></div>
+      <div><label class="field-lbl">Outfit Color</label><input class="inp" type="text" value="Navy Blue"/></div>
+    </div>
+    <button class="get-btn" onclick="showJewelryDemoRecs()"><i class="fa fa-wand-magic-sparkles"></i> Get AI Jewelry Picks</button>
+  </div>
+  <div id="jewelry-demo-result"></div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
 
 <script>
-/* ═══════════════════════════════════════════════
-   DATA STORE
-═══════════════════════════════════════════════ */
-const DB = {
-  user: null,
-  expenses: [],
-  budget: {},
-  savings: { goal: 0, saved: 0 },
-  income: 0,
-  currency: '$'
+/* ══════════════════════════════════════════
+   AUTH GUARD — redirect to login.html if not logged in
+   Reads session that login.html wrote to localStorage
+══════════════════════════════════════════ */
+(function(){
+  try{
+    const u = JSON.parse(localStorage.getItem('ps_user')||'null');
+    if(!u || !u.name){
+      window.location.href = 'login.html';
+      return;
+    }
+    // Populate sidebar user info with real logged-in name
+    document.getElementById('u-avatar').textContent = u.name[0].toUpperCase();
+    document.getElementById('u-name').textContent    = u.name;
+    if(u.username) document.getElementById('u-meta').textContent = '@'+u.username;
+  }catch(e){
+    window.location.href = 'login.html';
+  }
+})();
+
+/* ══ LOGOUT — clears session and goes back to login.html ══ */
+function doLogout(){
+  localStorage.removeItem('ps_user');
+  window.location.href = 'login.html';
+}
+
+/* ══ Navigation ══ */
+function go(name, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  if(name==='recs') showRecs(document.querySelector('.rtab.active'),'general');
+}
+
+/* ══ Expenses ══ */
+const demoExpenses = [
+  {id:1,date:'2025-02-20',cat:'Housing',desc:'Monthly Rent',amt:1200},
+  {id:2,date:'2025-02-18',cat:'Food',desc:'Grocery shopping',amt:320},
+  {id:3,date:'2025-02-15',cat:'Transport',desc:'Uber rides',amt:340},
+  {id:4,date:'2025-02-12',cat:'Food',desc:'Restaurant dinner',amt:85},
+  {id:5,date:'2025-02-10',cat:'Entertainment',desc:'Netflix + Spotify',amt:45},
+];
+function renderExpenses(){
+  const tbody=document.getElementById('exp-body');
+  tbody.innerHTML=demoExpenses.map(e=>`<tr><td style="color:var(--muted)">${e.date}</td><td><span class="cat-badge">${e.cat}</span></td><td>${e.desc}</td><td style="font-weight:600;color:var(--rose)">$${e.amt.toFixed(2)}</td><td><button class="del-btn" onclick="delDemoExp(${e.id})"><i class="fa fa-trash"></i></button></td></tr>`).join('');
+  document.getElementById('exp-count').textContent=demoExpenses.length+' expenses';
+}
+function delDemoExp(id){const i=demoExpenses.findIndex(e=>e.id===id);if(i>-1){demoExpenses.splice(i,1);renderExpenses();showToast('Expense deleted','success');}}
+function addDemoExpense(){demoExpenses.unshift({id:Date.now(),date:'2025-02-22',cat:'Shopping',desc:'New item',amt:49.99});renderExpenses();showToast('Expense added! ✅','success');}
+renderExpenses();
+
+/* ══ Chat ══ */
+const demoReplies={
+  analyze:'📊 **Spending Analysis**\n\nYour total spend is $2,840 (54.6% of income) — you\'re in the **Good** zone! 💚\n\n**Top observations:**\n• Housing at $1,200 is your biggest expense (42%)\n• Food spending ($820) is slightly high — budget was $900 ✅\n• Entertainment ($280) close to $300 limit — watch this!\n\n**Recommendations:**\n1. 💡 Cook 2 more meals/week → save ~$120/month\n2. 🎮 Audit subscriptions → potential $40 savings\n3. 🚗 Use public transit 2x/week → save ~$80/month\n\n🌟 You\'re on track to hit your $1,000 savings goal!',
+  home:'🏠 **Home Decor Ideas for $2,360 remaining**\n\n1. **IKEA KALLAX Shelf** — $89.99\n2. **Amazon Basics Floor Lamp** — $34.99\n3. **Wayfair Area Rug (5\'x8\')** — $129-$189\n4. **IKEA LACK Side Table** — $19.99\n5. **Amazon Canvas Wall Art Set** — $39.99\n\n💡 Tip: Shop IKEA\'s "As-Is" section for 30-50% off!',
+  party:'🎉 **Party Budget Plan — $1,500 for 40 guests**\n\n• 🏛️ Venue/Decor: $300 (20%)\n• 🍕 Food & Drinks: $600 (40%)\n• 🎊 Decorations: $225 (15%)\n• 🎵 Entertainment: $225 (15%)\n• 🎁 Misc/Buffer: $150 (10%)\n\n**Tips:** Costco catering, DIY balloon arch, Canva invites!',
+  jewelry:'💎 **Jewelry Picks for Navy Blue — $300 budget**\n\n1. **Pearl Drop Earrings** — $45-$80 (Zales/Amazon)\n2. **Gold Chain Bracelet** — $35-$60 (Mejuri)\n3. **Sapphire Stud Earrings** — $60-$120 (Kay/Etsy)\n4. **Delicate Gold Necklace** — $40-$80 (Mejuri)\n\n💡 Check Mejuri.com for quality pieces under $100!',
+  save:'💰 **How to Save More**\n\n**Current savings rate: 13% ($680/$5,200)**\nTarget: 20% = $1,040/month — Gap: $360/month\n\n1. 🍔 Reduce Food by $150 → meal prep 3x/week\n2. 🎮 Cut Entertainment by $80 → cancel unused subs\n3. 🚗 Transport savings of $80 → carpool 2x/week\n4. 🛍️ 24-hour rule on Shopping → saves ~$50\n\n**Total potential savings: $360/month** 🎯',
+  default:'💬 Based on your budget data, you\'re spending $2,840 of your $5,200 income this month.\n\nYour **financial health score is 75/100 (Good)**!\n\nAsk me about:\n• 📊 Spending analysis\n• 💡 Savings recommendations\n• 🏠 Home decor ideas\n• 🎉 Party planning\n• 💎 Jewelry picks'
 };
-
-const CAT_ICONS  = {Food:"🍔",Transport:"🚗",Entertainment:"🎬",Shopping:"🛍️",Health:"💊",Bills:"📄",Education:"📚",Other:"📦"};
-const CAT_COLORS = {Food:"#3B6EF8",Transport:"#0FCFB8",Entertainment:"#8B5CF6",Shopping:"#F5A623",Health:"#12C784",Bills:"#F03E3E",Education:"#3B82F6",Other:"#94A3B8"};
-const CATS = Object.keys(CAT_ICONS);
-
-/* ═══════════════════════════════════════════════
-   UTILITIES
-═══════════════════════════════════════════════ */
-function fmt(n) {
-  return `${DB.currency}${parseFloat(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+function getDemoReply(msg){
+  const m=msg.toLowerCase();
+  if(m.includes('analyz')||m.includes('spend'))return demoReplies.analyze;
+  if(m.includes('home')||m.includes('decor')||m.includes('furniture'))return demoReplies.home;
+  if(m.includes('party')||m.includes('event'))return demoReplies.party;
+  if(m.includes('jewel')||m.includes('necklace')||m.includes('ring'))return demoReplies.jewelry;
+  if(m.includes('save')||m.includes('saving'))return demoReplies.save;
+  return demoReplies.default;
 }
-function uid() { return Date.now()+Math.random().toString(36).slice(2,6); }
-function totalSpent() { return DB.expenses.reduce((s,e)=>s+e.amt,0); }
-function byCategory() {
-  const r={};
-  DB.expenses.forEach(e=>{r[e.cat]=(r[e.cat]||0)+e.amt;});
-  return r;
+function addMsg(text,role){
+  const c=document.getElementById('chat-demo'),d=document.createElement('div');
+  d.className='msg '+role;
+  if(role==='ai'){const fmt=text.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');d.innerHTML=`<div class="msg-hd">🤖 PocketSmart AI</div>${fmt}`;}
+  else d.textContent=text;
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
-function showToast(msg, type='ok') {
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.className='toast show '+(type==='err'?'toast-err':type==='warn'?'toast-warn':'toast-ok');
-  setTimeout(()=>t.className='toast',3000);
-}
+function addTyping(){const c=document.getElementById('chat-demo'),d=document.createElement('div');d.className='typing';d.id='typing-indicator';d.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div><span style="margin-left:6px;font-size:11px;color:var(--muted)">Thinking...</span>';c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function sendDemoChat(){const inp=document.getElementById('demo-input'),msg=inp.value.trim();if(!msg)return;inp.value='';addMsg(msg,'user');addTyping();setTimeout(()=>{document.getElementById('typing-indicator')?.remove();addMsg(getDemoReply(msg),'ai');},1200);}
+function demoQuick(el){document.getElementById('demo-input').value=el.textContent.trim().replace(/^[^\w]*/,'');sendDemoChat();}
+function clearDemoChat(){document.getElementById('chat-demo').innerHTML='<div class="msg ai"><div class="msg-hd">🤖 PocketSmart AI</div>Chat cleared! How can I help you today? 💬</div>';}
+let demoTTS=false;
+function toggleDemoTTS(){demoTTS=!demoTTS;const btn=document.getElementById('tts-demo-btn');btn.innerHTML=demoTTS?'<i class="fa fa-volume-high"></i> Voice On':'<i class="fa fa-volume-xmark"></i> Voice Off';btn.style.color=demoTTS?'var(--accent)':'';showToast(demoTTS?'🔊 Voice output enabled':'🔇 Voice output off','success');}
+let demoMicOn=false;
+function toggleDemoMic(){demoMicOn=!demoMicOn;const btn=document.getElementById('mic-demo');btn.style.color=demoMicOn?'var(--rose)':'';btn.style.borderColor=demoMicOn?'var(--rose)':'';btn.innerHTML=demoMicOn?'<i class="fa fa-stop"></i>':'<i class="fa fa-microphone"></i>';if(demoMicOn){showToast('🎙️ Listening... (demo mode)','success');setTimeout(()=>{demoMicOn=false;btn.style.color='';btn.style.borderColor='';btn.innerHTML='<i class="fa fa-microphone"></i>';document.getElementById('demo-input').value='Analyze my spending patterns';},2000);}}
 
-/* ═══════════════════════════════════════════════
-   AUTH
-═══════════════════════════════════════════════ */
-function switchTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.auth-section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  document.getElementById('sec-'+tab).classList.add('active');
-  const ind=document.getElementById('tabIndicator');
-  ind.style.left = tab==='login'?'3px':'50%';
-}
-
-function togglePw(id, btn) {
-  const inp=document.getElementById(id);
-  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
-  else{inp.type='password';btn.textContent='👁';}
+/* ══ Analysis ══ */
+function setDemoFocus(btn){document.querySelectorAll('.focus-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+const analysisTexts={
+  '🔍 General':`📊 SPENDING ANALYSIS — General Overview\n\n💡 Key Observations:\nYou've spent $2,840 of your $5,200 income (54.6%). This puts you in the "Good" financial health zone!\n\n⚠️ Top 3 Concerns:\n1. Food ($820) is approaching your $900 limit — you have $80 left\n2. Entertainment ($280) is close to your $300 cap\n3. No emergency fund tracked — consider adding this category\n\n💡 Actionable Recommendations:\n1. Meal prep 2x/week → save $120/month on food\n2. Cancel unused subscriptions → save $35-$50/month\n3. Set up auto-transfer of $200/paycheck to savings\n\n🏆 Health Score: 75/100 (Good)\nSmall consistent changes add up — $360 more saved/month = $4,320/year!`,
+  '💰 Savings':`💰 SAVINGS ANALYSIS\n\nCurrent savings rate: 13.1% ($680/$5,200)\nTarget for financial health: 20% ($1,040/month)\nGap to close: $360/month\n\n⚠️ Concerns:\n1. Savings goal ($1,000) is only 19% of income\n2. No separate emergency fund\n3. No investment contributions tracked\n\n💡 Savings Boosters:\n1. Round up purchases → auto-save ~$45/month\n2. 50/30/20 rule: needs/wants/savings\n3. One no-spend day/week → saves $200-$300/month\n\n🌟 If you save $360 more/month, you'll have an extra $4,320 by year end!`
+};
+function runDemoAnalysis(){
+  const active=document.querySelector('.focus-btn.active');
+  const focus=active?.textContent||'🔍 General';
+  const el=document.getElementById('analysis-demo');
+  el.innerHTML='<div style="display:flex;align-items:center;gap:10px;color:var(--muted);padding:20px"><div style="width:18px;height:18px;border:2px solid var(--surface2);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite"></div>Running AI analysis...</div>';
+  setTimeout(()=>{const txt=analysisTexts[focus]||analysisTexts['🔍 General'];el.innerHTML=`<div class="analysis-box">${txt}</div>`;},1500);
 }
 
-function doLogin() {
-  const u=document.getElementById('loginUser').value.trim();
-  const p=document.getElementById('loginPass').value.trim();
-  const err=document.getElementById('loginErr');
-  err.classList.add('hide');
-  if(!u||!p){err.textContent='Please fill in both fields.';err.classList.remove('hide');return;}
-  if(u.length<2||p.length<3){err.textContent='Invalid credentials.';err.classList.remove('hide');return;}
-  DB.user={name:u==='demo'?'Alex Johnson':u, username:u, currency:'$', income:3000};
-  if(u==='demo'){DB.income=3000;DB.currency='$';DB.expenses=[
-    {id:'e1',cat:'Food',desc:'Lunch & groceries',amt:320,date:new Date().toISOString().split('T')[0]},
-    {id:'e2',cat:'Transport',desc:'Rideshare & gas',amt:180,date:new Date().toISOString().split('T')[0]},
-    {id:'e3',cat:'Entertainment',desc:'Netflix, games',amt:75,date:new Date().toISOString().split('T')[0]},
-    {id:'e4',cat:'Bills',desc:'Electricity & internet',amt:210,date:new Date().toISOString().split('T')[0]},
-    {id:'e5',cat:'Health',desc:'Gym membership',amt:55,date:new Date().toISOString().split('T')[0]},
-  ];}
-  enterApp();
+/* ══ Recommendations ══ */
+const recsData={
+  general:[
+    {pri:'h',title:'Cut Food Spending',cat:'Food',saving:120,desc:'Meal prep on Sundays to reduce restaurant visits. Cook 4 dinners at home — saves $30/week easily.'},
+    {pri:'h',title:'Audit Subscriptions',cat:'Entertainment',saving:45,desc:'Review all monthly subscriptions. Most people have 3-4 forgotten ones. Cancel those used less than 2x/month.'},
+    {pri:'m',title:'Cashback Credit Card',cat:'Shopping',saving:80,desc:'Use a 2% cashback card for all purchases. On your $2,840 spend, that\'s $56+ back every month.'},
+    {pri:'m',title:'Reduce Uber Usage',cat:'Transport',saving:90,desc:'Replace 3 Uber rides/week with public transit. At $12 avg per ride, that\'s $144/month saved.'},
+    {pri:'l',title:'Bundle Insurance',cat:'Utilities',saving:35,desc:'Bundle home, auto, and life insurance. Most insurers offer 10-25% multi-policy discounts.'},
+  ],
+  home:[
+    {pri:'h',title:'IKEA KALLAX Shelving',cat:'Furniture',price:89,platform:'IKEA',desc:'Modular shelf system perfect for any room. Doubles as room divider.',tip:'Buy during IKEA family sale for extra 10% off'},
+    {pri:'h',title:'LED Floor Lamp',cat:'Lighting',price:34,platform:'Amazon',desc:'Warm/cool adjustable LED. Instantly changes the mood of a room for under $35.',tip:'Search "TaoTronics floor lamp" on Amazon — best value'},
+    {pri:'m',title:'5x8 Area Rug',cat:'Decor',price:149,platform:'Wayfair',desc:'Anchor your living room and add warmth. Choose a neutral base color.',tip:'Wayfair Way Day sale — up to 70% off rugs twice a year'},
+    {pri:'m',title:'Floating Wall Shelves',cat:'Decor',price:39,platform:'Amazon',desc:'Set of 3 floating shelves for plants, books, or art. Easy to install.',tip:'Amazon Basics brand — same quality for 40% less'},
+  ],
+  party:[
+    {pri:'h',title:'Costco Catering Platter',cat:'Food',cost:180,desc:'Feed 40 people with Costco party platters. $45-$60 each — way cheaper than restaurant catering.'},
+    {pri:'h',title:'Backyard Venue Setup',cat:'Venue',cost:50,desc:'Use your own space! Rent string lights ($20) and folding chairs ($30-50) from Facebook Marketplace.'},
+    {pri:'m',title:'DIY Balloon Arch',cat:'Decor',cost:35,desc:'Balloon arch kits on Amazon for $25-35. Takes 30 mins and looks stunning — saves $150+ vs florist.'},
+    {pri:'m',title:'Spotify DJ Playlist',cat:'Entertainment',cost:0,desc:'Curate a 4-hour Spotify playlist instead of hiring a DJ. Saves $200-$400.'},
+  ],
+  jewelry:[
+    {pri:'h',title:'Pearl Drop Earrings',occ:'Wedding/Formal',price:65,tip:'Classic with navy blue — pair with minimal necklace',buy:'Zales / Amazon'},
+    {pri:'h',title:'Layered Gold Necklace',occ:'Casual/Date Night',price:55,tip:'3-layer 14K gold-filled — elevates any outfit',buy:'Mejuri / Madewell'},
+    {pri:'m',title:'Sapphire Stud Earrings',occ:'Festive/Religious',price:90,tip:'Navy sapphire matches your outfit perfectly!',buy:'Kay Jewelers / Etsy'},
+    {pri:'m',title:'Delicate Tennis Bracelet',occ:'Formal Events',price:75,tip:'Silver or gold — works with navy, black, white outfits',buy:'Amazon / Pandora'},
+  ]
+};
+function showRecs(btn,type){
+  if(btn){document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');}
+  const data=recsData[type]||recsData.general;
+  document.getElementById('recs-demo').innerHTML='<div class="rec-grid">'+data.map(r=>buildRecCard(r,type)).join('')+'</div>';
+}
+function buildRecCard(r,type){
+  const pc=r.pri==='h'?'pri-h':r.pri==='m'?'pri-m':'pri-l';
+  const pl=r.pri==='h'?'HIGH PRIORITY':r.pri==='m'?'MEDIUM PRIORITY':'LOW PRIORITY';
+  let ex='';
+  if(type==='general')ex=`<div class="rec-saving"><i class="fa fa-piggy-bank"></i> Save ~$${r.saving}/month</div>`;
+  if(type==='home')ex=`<div class="rec-saving"><i class="fa fa-tag"></i> ~$${r.price} · ${r.platform}</div><div style="margin-top:5px;font-size:11.5px;color:var(--gold)">💡 ${r.tip}</div>`;
+  if(type==='party')ex=`<div class="rec-saving"><i class="fa fa-dollar-sign"></i> ~$${r.cost} estimated</div>`;
+  if(type==='jewelry')ex=`<div style="margin-top:8px;font-size:11.5px;color:var(--purple)">👗 ${r.tip}</div><div style="margin-top:4px;font-size:11.5px;color:var(--sky)"><i class="fa fa-shopping-bag"></i> ${r.buy}</div>`;
+  return`<div class="rec-card"><div class="pri ${pc}">${pl}</div><h4>${r.title}</h4><p>${r.desc}</p>${ex}</div>`;
 }
 
-function doRegister() {
-  const n=document.getElementById('regName').value.trim();
-  const u=document.getElementById('regUser').value.trim();
-  const p=document.getElementById('regPass').value.trim();
-  const inc=parseFloat(document.getElementById('regIncome').value)||0;
-  const cur=document.getElementById('regCurrency').value;
-  const err=document.getElementById('regErr');
-  const ok=document.getElementById('regOk');
-  [err,ok].forEach(e=>e.classList.add('hide'));
-  if(!n||!u||!p){err.textContent='Name, username & password required.';err.classList.remove('hide');return;}
-  if(p.length<6){err.textContent='Password must be at least 6 characters.';err.classList.remove('hide');return;}
-  DB.user={name:n,username:u,currency:cur,income:inc};
-  DB.income=inc;DB.currency=cur;
-  ok.textContent='✅ Account created! Signing you in...';ok.classList.remove('hide');
-  setTimeout(enterApp,1200);
+/* ══ Planner Demos ══ */
+function showHomeDemoRecs(){document.getElementById('home-demo-result').innerHTML=`<div class="result-card" style="margin-top:16px"><div class="result-text">🏠 <b>Modern Minimalist Living Room — $2,000 Budget</b>\n\n1. 🛋️ <b>IKEA KIVIK Sofa</b> — ~$599 (IKEA)\n2. 🪑 <b>Mid-Century Accent Chair</b> — ~$189 (Amazon)\n3. 💡 <b>ARC Floor Lamp</b> — ~$79 (Amazon)\n4. 🖼️ <b>Abstract Canvas Art Set (3pc)</b> — ~$49 (Amazon)\n5. 🪴 <b>Large Monstera Plant + Ceramic Pot</b> — ~$65 (IKEA)\n\n<b>Total: ~$981</b> — well within your $2,000 budget! 🎯</div></div>`;}
+function showPartyDemoRecs(){document.getElementById('party-demo-result').innerHTML=`<div class="result-card" style="margin-top:16px"><div class="result-text">🎉 <b>Birthday Party Plan — $1,500 for 40 Guests</b>\n\n🏛️ Venue setup  ........  $75\n🍕 Food & Drinks  .......  $600\n🎊 Decorations  .........  $200\n🎵 Entertainment  .......  $125\n🎂 Birthday Cake  .......  $150\n🎁 Party Favors  ........  $100\n💰 Buffer  ..............  $250\n\n<b>✅ You'll come in UNDER budget!</b></div></div>`;}
+function showJewelryDemoRecs(){document.getElementById('jewelry-demo-result').innerHTML=`<div class="result-card" style="margin-top:16px"><div class="result-text">💎 <b>Gold Jewelry for Wedding — Navy Blue — $300 Budget</b>\n\n1. ✨ <b>14K Gold Pearl Drop Earrings</b> — $65 (Zales)\n2. 📿 <b>Delicate Gold Chain Necklace</b> — $55 (Mejuri)\n3. 💍 <b>Gold Stackable Rings Set (3pc)</b> — $45 (Etsy)\n4. ✨ <b>Gold Cuff Bracelet</b> — $70 (Kendra Scott)\n\n<b>Total: $235 — $65 under your $300 budget!</b> 🎯</div></div>`;}
+
+/* ══ Toast ══ */
+function showToast(msg,type='success'){
+  const existing=document.querySelector('.toast');if(existing)existing.remove();
+  const colors={success:'var(--accent)',warn:'var(--gold)',error:'var(--rose)'};
+  const icons={success:'fa-check-circle',warn:'fa-triangle-exclamation',error:'fa-circle-exclamation'};
+  const t=document.createElement('div');t.className='toast';
+  t.innerHTML=`<i class="fa ${icons[type]||icons.success}" style="color:${colors[type]||colors.success}"></i>${msg}`;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
 }
 
-function enterApp() {
-  document.getElementById('loginPage').classList.add('hide');
-  document.getElementById('appPage').classList.remove('hide');
-  document.getElementById('sbAvatar').textContent=(DB.user.name||'U')[0].toUpperCase();
-  document.getElementById('sbUsername').textContent=DB.user.name;
-  document.getElementById('sbUserSub').textContent=DB.user.username+' • '+DB.currency;
-  document.getElementById('expCurrIcon').textContent=DB.currency;
-  document.getElementById('budgetIncome').value=DB.income||'';
-  document.getElementById('aiIncome').value=DB.income||'';
-  document.getElementById('expDate').value=new Date().toISOString().split('T')[0];
-  initBudgetRows();
-  refreshDashboard();
-  document.getElementById('dashTitle').textContent='Dashboard 📊';
-  document.getElementById('dashSub').textContent='Welcome back, '+DB.user.name.split(' ')[0]+'!';
-}
-
-function doLogout() {
-  Object.assign(DB,{user:null,expenses:[],budget:{},savings:{goal:0,saved:0},income:0,currency:'$'});
-  document.getElementById('appPage').classList.add('hide');
-  document.getElementById('loginPage').classList.remove('hide');
-  switchTab('login');
-  showToast('Logged out successfully','ok');
-}
-
-/* ═══════════════════════════════════════════════
-   NAVIGATION
-═══════════════════════════════════════════════ */
-function goPage(page) {
-  document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
-  document.getElementById('pg-'+page).classList.add('active');
-  document.getElementById('sbl-'+page).classList.add('active');
-  if(page==='dashboard') refreshDashboard();
-  if(page==='expenses') refreshExpenses();
-  if(page==='budget') refreshBudgetPage();
-}
-
-/* ═══════════════════════════════════════════════
-   DASHBOARD
-═══════════════════════════════════════════════ */
-function refreshDashboard() {
-  const spent=totalSpent();
-  const rem=DB.income-spent;
-  const pct=DB.income?Math.round(spent/DB.income*100):0;
-  document.getElementById('stIncome').textContent=fmt(DB.income);
-  document.getElementById('stSpent').textContent=fmt(spent);
-  document.getElementById('stRem').textContent=fmt(rem);
-  document.getElementById('stPct').textContent=pct+'% used';
-  document.getElementById('stCount').textContent=DB.expenses.length;
-
-  // Category bars
-  const bc=byCategory();
-  const catBars=document.getElementById('catBars');
-  const catEmpty=document.getElementById('catBarsEmpty');
-  if(Object.keys(bc).length===0){catBars.innerHTML='';catEmpty.style.display='block';}
-  else{
-    catEmpty.style.display='none';
-    const maxAmt=Math.max(...Object.values(bc));
-    catBars.innerHTML=Object.entries(bc).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>`
-      <div class="cat-bar-row">
-        <div class="cat-bar-label"><span>${CAT_ICONS[cat]||'📦'}</span><span>${cat}</span></div>
-        <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${maxAmt>0?Math.round(amt/maxAmt*100):0}%;background:${CAT_COLORS[cat]||'#94A3B8'}"></div></div>
-        <div class="cat-bar-amt">${fmt(amt)}</div>
-      </div>`).join('');
-  }
-
-  // Recent expenses
-  const recentList=document.getElementById('recentList');
-  const recentEmpty=document.getElementById('recentEmpty');
-  const recent=DB.expenses.slice().reverse().slice(0,5);
-  if(!recent.length){recentList.innerHTML='';recentEmpty.style.display='block';}
-  else{
-    recentEmpty.style.display='none';
-    recentList.innerHTML=recent.map(e=>`
-      <div class="recent-row">
-        <div class="recent-cat-icon">${CAT_ICONS[e.cat]||'📦'}</div>
-        <div class="recent-info"><div class="recent-desc">${e.desc}</div><div class="recent-cat">${e.cat} • ${e.date}</div></div>
-        <div class="recent-amt">-${fmt(e.amt)}</div>
-      </div>`).join('');
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   EXPENSES
-═══════════════════════════════════════════════ */
-let selectedCat='Food';
-function selectCat(btn, cat) {
-  document.querySelectorAll('.cat-pill').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  selectedCat=cat;
-}
-
-function addExpense() {
-  const amt=parseFloat(document.getElementById('expAmt').value);
-  const desc=document.getElementById('expDesc').value.trim();
-  const date=document.getElementById('expDate').value;
-  if(!amt||amt<=0){showToast('Enter a valid amount','err');return;}
-  if(!desc){showToast('Enter a description','err');return;}
-  DB.expenses.push({id:uid(),cat:selectedCat,desc,amt,date:date||new Date().toISOString().split('T')[0]});
-  document.getElementById('expAmt').value='';
-  document.getElementById('expDesc').value='';
-  document.getElementById('expAmtPreview').textContent=DB.currency+'0.00';
-  showToast('✅ Expense added!','ok');
-  refreshExpenses();
-}
-
-function removeExpense(id) {
-  DB.expenses=DB.expenses.filter(e=>e.id!==id);
-  refreshExpenses();
-  showToast('Expense removed','ok');
-}
-
-function refreshExpenses() {
-  const list=document.getElementById('allExpensesList');
-  const empty=document.getElementById('allExpEmpty');
-  if(!DB.expenses.length){list.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  list.innerHTML=DB.expenses.slice().reverse().map(e=>`
-    <div class="exp-row">
-      <div class="exp-icon">${CAT_ICONS[e.cat]||'📦'}</div>
-      <div class="exp-info"><div class="exp-desc">${e.desc}</div><div class="exp-meta">${e.cat} • ${e.date}</div></div>
-      <div class="exp-amt">-${fmt(e.amt)}</div>
-      <button class="exp-del" onclick="removeExpense('${e.id}')">🗑</button>
-    </div>`).join('');
-}
-
-/* ═══════════════════════════════════════════════
-   BUDGET
-═══════════════════════════════════════════════ */
-function initBudgetRows() {
-  document.getElementById('budgetLimitRows').innerHTML=CATS.map(cat=>`
-    <div class="bcat-row">
-      <div class="bcat-icon">${CAT_ICONS[cat]}</div>
-      <div class="bcat-name">${cat}</div>
-      <input type="number" class="bcat-inp" id="bl_${cat}" placeholder="Limit" value="${DB.budget[cat]||''}"/>
-    </div>`).join('');
-}
-
-function refreshBudgetPage() {
-  initBudgetRows();
-  document.getElementById('budgetIncome').value=DB.income||'';
-  document.getElementById('savGoal').value=DB.savings.goal||'';
-  document.getElementById('savSaved').value=DB.savings.saved||'';
-  updateSavingsDisplay();
-}
-
-function saveIncome() {
-  const v=parseFloat(document.getElementById('budgetIncome').value);
-  if(!v||v<=0){showToast('Enter valid income','err');return;}
-  DB.income=v;
-  showToast('✅ Income saved!','ok');
-}
-
-function saveBudgets() {
-  CATS.forEach(cat=>{
-    const el=document.getElementById('bl_'+cat);
-    if(el){const v=parseFloat(el.value);DB.budget[cat]=v>0?v:0;}
-  });
-  showToast('✅ Budget limits saved!','ok');
-}
-
-function saveSavings() {
-  DB.savings.goal=parseFloat(document.getElementById('savGoal').value)||0;
-  DB.savings.saved=parseFloat(document.getElementById('savSaved').value)||0;
-  updateSavingsDisplay();
-  showToast('✅ Savings updated!','ok');
-}
-
-function updateSavingsDisplay() {
-  const disp=document.getElementById('savingsDisplay');
-  if(!DB.savings.goal){disp.style.display='none';return;}
-  disp.style.display='block';
-  const pct=Math.min(100,Math.round(DB.savings.saved/DB.savings.goal*100));
-  document.getElementById('savingsVal').textContent=fmt(DB.savings.saved);
-  document.getElementById('savingsSub').textContent=pct+'% of '+fmt(DB.savings.goal)+' goal';
-  document.getElementById('savingsBar').style.width=pct+'%';
-}
-
-/* ═══════════════════════════════════════════════
-   AI ANALYZE (calls backend)
-═══════════════════════════════════════════════ */
-function addAERow() {
-  const div=document.createElement('div');
-  div.className='ae-row';
-  div.innerHTML=`
-    <select class="ae-cat">
-      ${CATS.map(c=>`<option>${c}</option>`).join('')}
-    </select>
-    <input type="number" class="ae-amt" placeholder="Amount"/>
-    <input type="text" class="ae-desc" placeholder="Description"/>
-    <button class="ae-remove" onclick="removeAERow(this)">✕</button>`;
-  document.getElementById('aiExpensesList').appendChild(div);
-}
-
-function removeAERow(btn) {
-  const rows=document.querySelectorAll('#aiExpensesList .ae-row');
-  if(rows.length<=1){showToast('Keep at least one expense row','warn');return;}
-  btn.closest('.ae-row').remove();
-}
-
-async function runAnalysis() {
-  const income=document.getElementById('aiIncome').value.trim();
-  const savGoal=document.getElementById('aiSavingsGoal').value.trim();
-  const errEl=document.getElementById('analyzeError');
-  errEl.classList.add('hide');
-
-  if(!income){errEl.textContent='Monthly income is required.';errEl.classList.remove('hide');return;}
-
-  const rows=document.querySelectorAll('#aiExpensesList .ae-row');
-  const expenses=[];
-  for(const row of rows){
-    const cat=row.querySelector('.ae-cat').value;
-    const amt=parseFloat(row.querySelector('.ae-amt').value);
-    const desc=row.querySelector('.ae-desc').value.trim();
-    if(amt>0) expenses.push({category:cat,amount:amt,description:desc||cat});
-  }
-  if(!expenses.length){errEl.textContent='Add at least one expense with an amount.';errEl.classList.remove('hide');return;}
-
-  // Show loading
-  const btn=document.getElementById('analyzeBtn');
-  document.getElementById('analyzeBtnText').textContent='Analyzing...';
-  document.getElementById('analyzeSpinner').classList.remove('hide');
-  btn.disabled=true;
-
-  try {
-    const res=await fetch('/analyze',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({income,expenses,savings_goal:savGoal,currency:DB.currency})
-    });
-    const data=await res.json();
-    if(!res.ok||data.error) throw new Error(data.error||'Analysis failed');
-
-    const card=document.getElementById('analysisCard');
-    card.style.display='block';
-
-    // Summary row
-    const s=data.summary;
-    document.getElementById('analysisSummary').innerHTML=`
-      <div class="ai-sum-grid">
-        <div class="ai-sum-item"><div class="ai-sum-val" style="color:#3B6EF8">${DB.currency}${s.income.toLocaleString()}</div><div class="ai-sum-lbl">Income</div></div>
-        <div class="ai-sum-item"><div class="ai-sum-val" style="color:#F03E3E">${DB.currency}${s.total_spent.toFixed(2)}</div><div class="ai-sum-lbl">Spent</div></div>
-        <div class="ai-sum-item"><div class="ai-sum-val" style="color:#12C784">${DB.currency}${s.remaining.toFixed(2)}</div><div class="ai-sum-lbl">Remaining</div></div>
-        <div class="ai-sum-item"><div class="ai-sum-val" style="color:#8B5CF6">${s.spent_pct}%</div><div class="ai-sum-lbl">Used</div></div>
-      </div>`;
-
-    // Format AI text into cards
-    document.getElementById('analysisText').innerHTML=formatAnalysis(data.analysis);
-    card.scrollIntoView({behavior:'smooth',block:'start'});
-    showToast('✅ Analysis complete!','ok');
-
-  } catch(e) {
-    errEl.textContent='Error: '+e.message;
-    errEl.classList.remove('hide');
-    showToast('Analysis failed','err');
-  } finally {
-    document.getElementById('analyzeBtnText').textContent='🤖 Analyze My Budget';
-    document.getElementById('analyzeSpinner').classList.add('hide');
-    btn.disabled=false;
-  }
-}
-
-function formatAnalysis(text) {
-  // Convert markdown-ish sections into styled cards
-  const sections=text.split(/##\s+/g).filter(Boolean);
-  if(sections.length<=1) return `<div class="analysis-block">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
-  return sections.map(s=>{
-    const lines=s.split('\n');
-    const title=lines[0];
-    const body=lines.slice(1).join('\n').trim()
-      .replace(/\n/g,'<br>')
-      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g,'<em>$1</em>');
-    return `<div class="analysis-section"><div class="analysis-sec-title">${title}</div><div class="analysis-sec-body">${body}</div></div>`;
-  }).join('');
-}
-
-/* ═══════════════════════════════════════════════
-   FLOATING CHATBOT (calls backend)
-═══════════════════════════════════════════════ */
-function toggleChatbot() {
-  document.getElementById('cbPanel').classList.toggle('open');
-}
-
-async function cbSend(msg) {
-  msg=msg.trim(); if(!msg) return;
-  const input=document.getElementById('cbInput');
-  input.value='';
-  cbAppend('user',msg);
-  cbTyping(true);
-  const sendBtn=document.getElementById('cbSendBtn');
-  sendBtn.disabled=true;
-  // Clear welcome
-  const wc=document.querySelector('.cb-welcome');
-  if(wc)wc.remove();
-
-  try {
-    const res=await fetch('/chat',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        message:msg,
-        context:{income:DB.income,total_spent:totalSpent(),currency:DB.currency,expenses:DB.expenses}
-      })
-    });
-    const data=await res.json();
-    cbTyping(false);
-    cbAppend('ai',data.reply||data.error||'Sorry, I could not process that.');
-  } catch(e) {
-    cbTyping(false);
-    cbAppend('ai','⚠️ Could not reach AI. Make sure Flask server is running!');
-  } finally {
-    sendBtn.disabled=false;
-  }
-}
-
-function cbAppend(role,text) {
-  const el=document.getElementById('cbMsgs');
-  const d=document.createElement('div');
-  d.className='cb-row '+role;
-  d.innerHTML=`<div class="cb-av ${role}">${role==='ai'?'🤖':'👤'}</div><div class="cb-bub ${role}">${text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div>`;
-  el.appendChild(d);
-  el.scrollTop=el.scrollHeight;
-}
-
-function cbTyping(show) {
-  const el=document.getElementById('cbMsgs');
-  if(show){
-    const d=document.createElement('div');d.id='cbTyp';d.className='cb-row';
-    d.innerHTML=`<div class="cb-av ai">🤖</div><div class="cb-typing"><span></span><span></span><span></span></div>`;
-    el.appendChild(d);el.scrollTop=el.scrollHeight;
-  } else {document.getElementById('cbTyp')?.remove();}
-}
-
-/* Init */
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('expDate').value=new Date().toISOString().split('T')[0];
-});
+// Init
+showRecs(null,'general');
 </script>
 </body>
 </html>
