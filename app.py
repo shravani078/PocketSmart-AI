@@ -177,8 +177,16 @@ Be concise, warm, use emojis, specific with numbers. Use {s['currency']} currenc
 # ── Routes ─────────────────────────────────────────────────────────────────
 
 @app.route("/")
+def root():
+    return app.send_static_file("login.html")
+
+@app.route("/index.html")
 def index():
     return app.send_static_file("index.html")
+
+@app.route("/login.html")
+def login_page():
+    return app.send_static_file("login.html")
 
 @app.route("/health")
 def health():
@@ -430,3 +438,4 @@ if __name__ == "__main__":
     print(f"\n🚀  PocketSmart AI v2 → http://localhost:{port}")
     print(f"🤖  Active model: {active_model_name or 'None (set GEMINI_API_KEY in .env)'}\n")
     app.run(host="0.0.0.0", port=port, debug=debug)
+
